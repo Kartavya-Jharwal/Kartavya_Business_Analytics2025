@@ -1,0 +1,46 @@
+{
+  "chart": {
+    "title": "GDP per capita",
+    "subtitle": "This data is expressed in US dollars. It is adjusted for inflation but does not account for differences in living costs between countries.",
+    "note": "This data is expressed in constant 2015 US$.",
+    "citation": "National statistical organizations and central banks, OECD national accounts, and World Bank staff estimates (2025)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/gdp-per-capita-worldbank-constant-usd?v=1&csvType=full&useColumnShortNames=false",
+    "selection": [
+      "United States",
+      "Germany",
+      "United Kingdom",
+      "South Korea",
+      "France",
+      "Japan",
+      "China",
+      "India"
+    ]
+  },
+  "columns": {
+    "GDP per capita (constant 2015 US$)": {
+      "titleShort": "GDP per capita",
+      "titleLong": "GDP per capita - World Bank – In constant US$",
+      "descriptionShort": "Average economic output per person in a country or region per year. This data is adjusted by inflation but _does not_ account for differences in living costs between countries.",
+      "descriptionKey": [
+        "Gross domestic product (GDP) is a measure of the total value added from the production of goods and services in a country or region each year. GDP per capita is GDP divided by population.",
+        "This GDP per capita indicator provides information on economic growth and income levels from 1960.",
+        "This data is adjusted by inflation but _does not_ account for differences in living costs between countries.",
+        "This data is expressed in constant 2015 US$.",
+        "For GDP per capita estimates that account for both inflation and differences in the cost of living between countries, see [GDP per capita in constant international-$](https://ourworldindata.org/grapher/gdp-per-capita-worldbank)."
+      ],
+      "shortUnit": "$",
+      "unit": "constant 2015 US$",
+      "timespan": "1960-2024",
+      "type": "Numeric",
+      "owidVariableId": 1107055,
+      "shortName": "ny_gdp_pcap_kd",
+      "lastUpdated": "2025-09-08",
+      "nextUpdate": "2026-09-08",
+      "citationShort": "National statistical organizations and central banks, OECD national accounts, and World Bank staff estimates (2025) – with minor processing by Our World in Data",
+      "citationLong": "National statistical organizations and central banks, OECD national accounts, and World Bank staff estimates (2025) – with minor processing by Our World in Data. “GDP per capita – World Bank – In constant US$” [dataset]. National statistical organizations and central banks, OECD national accounts, and World Bank staff estimates, “World Development Indicators 122” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1107055.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-09-22",
+  "activeFilters": {}
+}
