@@ -1,0 +1,124 @@
+name: Generate PDF Report
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'A1/assignment.ipynb'
+      - 'A1/templates/**'
+      - '.github/workflows/generate-pdf.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'A1/assignment.ipynb'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  generate-pdf:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        
+    - name: Install UV
+      uses: astral-sh/setup-uv@v3
+      
+    - name: Install dependencies
+      working-directory: A1
+      run: |
+        uv sync
+        
+    - name: Install system dependencies for PDF
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          pandoc \
+          texlive-xetex \
+          texlive-fonts-recommended \
+          texlive-plain-generic \
+          wkhtmltopdf
+          
+    - name: Generate HTML report
+      working-directory: A1
+      run: |
+        uv run jupyter nbconvert \
+          --to html \
+          --template templates/custom_report.tpl \
+          --output-dir outputs \
+          --output assignment_report.html \
+          assignment.ipynb
+          
+    - name: Generate PDF from HTML
+      working-directory: A1
+      run: |
+        uv run jupyter nbconvert \
+          --to webpdf \
+          --template templates/custom_report.tpl \
+          --output-dir outputs \
+          --output assignment_report.pdf \
+          assignment.ipynb || \
+        wkhtmltopdf \
+          --enable-local-file-access \
+          --page-size A4 \
+          --margin-top 15mm \
+          --margin-bottom 15mm \
+          --margin-left 15mm \
+          --margin-right 15mm \
+          outputs/assignment_report.html \
+          outputs/assignment_report.pdf
+          
+    - name: Upload HTML artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: assignment-report-html
+        path: A1/outputs/assignment_report.html
+        retention-days: 90
+        
+    - name: Upload PDF artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: assignment-report-pdf
+        path: A1/outputs/assignment_report.pdf
+        retention-days: 90
+        
+    - name: Create outputs directory for release
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      run: mkdir -p release-outputs
+      
+    - name: Copy files for release
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      run: |
+        cp A1/outputs/assignment_report.html release-outputs/
+        cp A1/outputs/assignment_report.pdf release-outputs/
+        
+    - name: Generate timestamp
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      id: timestamp
+      run: echo "date=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+      
+    - name: Create Release
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: report-${{ steps.timestamp.outputs.date }}
+        name: Assignment Report ${{ steps.timestamp.outputs.date }}
+        body: |
+          Automated PDF and HTML report generation from assignment.ipynb
+          
+          **Generated:** ${{ steps.timestamp.outputs.date }}
+          **Commit:** ${{ github.sha }}
+          
+          ### Downloads:
+          - 📄 **assignment_report.pdf** - PDF version with beautiful styling
+          - 🌐 **assignment_report.html** - Interactive HTML version
+        files: |
+          release-outputs/assignment_report.pdf
+          release-outputs/assignment_report.html
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
