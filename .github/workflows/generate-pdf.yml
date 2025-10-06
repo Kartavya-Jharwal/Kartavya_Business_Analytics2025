@@ -28,7 +28,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          cache: 'pip'
 
       - name: Install UV
         uses: astral-sh/setup-uv@v3
@@ -38,7 +37,19 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
+      - name: Cache system dependencies
+        id: cache-system-deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            /usr/bin/pandoc
+            /usr/bin/wkhtmltopdf
+            /usr/share/texlive
+            /usr/bin/xelatex
+          key: ${{ runner.os }}-system-deps-v1
+
       - name: Install system dependencies for PDF
+        if: steps.cache-system-deps.outputs.cache-hit != 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
