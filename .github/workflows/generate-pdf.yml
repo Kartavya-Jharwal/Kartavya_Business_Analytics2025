@@ -17,7 +17,7 @@ jobs:
   generate-pdfs:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       issues: write
 
     steps:
@@ -95,11 +95,15 @@ jobs:
 
       - name: Create release on main (if push to main)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        continue-on-error: true
         uses: softprops/action-gh-release@v1
         with:
           tag_name: report-${{ github.sha }}
           name: Notebook Reports ${{ github.sha }}
           body: |
             Automated HTML/PDF generation for all notebooks changed in this push.
+          files: |
+            **/outputs/*.html
+            **/outputs/*.pdf
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
