@@ -1,49 +1,53 @@
 #!/usr/bin/env python3
 """
-Recursively convert all Jupyter notebooks to HTML and PDF formats
+Recursively convert all Jupyter notebooks to HTML and PDF formats.
+Outputs are saved in the same directory as the source notebook.
 """
-import os
-import subprocess
-import sys
 from pathlib import Path
+import subprocess
+
+TEMPLATE_PATH = Path(__file__).parent / "A1" / "templates" / "custom_report.tpl"
 
 def find_notebooks(root_dir):
-    """Find all .ipynb files recursively"""
+    """Find all .ipynb files recursively, excluding hidden directories"""
     root_path = Path(root_dir)
-    notebooks = list(root_path.rglob("*.ipynb"))
+    notebooks = [
+        nb for nb in root_path.rglob("*.ipynb")
+        if not any(part.startswith('.') for part in nb.parts)
+    ]
     return notebooks
 
-def create_output_dir(notebook_path):
-    """Create outputs directory next to the notebook"""
-    output_dir = notebook_path.parent / "outputs"
-    output_dir.mkdir(exist_ok=True)
-    return output_dir
-
 def convert_notebook(notebook_path, output_format="html"):
-    """Convert a single notebook to specified format"""
-    output_dir = create_output_dir(notebook_path)
+    """Convert a single notebook to specified format in the same directory"""
+    output_dir = notebook_path.parent
     
     try:
         cmd = [
             "uv", "run", "jupyter", "nbconvert",
             "--to", output_format,
             "--output-dir", str(output_dir),
-            str(notebook_path)
         ]
         
-        print(f"Converting {notebook_path.name} to {output_format.upper()}...")
+        # Add template if it exists and format is HTML or PDF
+        if TEMPLATE_PATH.exists() and output_format in ["html", "webpdf", "pdf"]:
+            cmd.extend(["--template", str(TEMPLATE_PATH)])
+        
+        cmd.append(str(notebook_path))
+        
+        print(f"📓 Converting {notebook_path.relative_to(Path.cwd())} to {output_format.upper()}...")
         result = subprocess.run(cmd, capture_output=True, text=True, cwd=Path.cwd())
         
         if result.returncode == 0:
-            print(f"✅ Success: {notebook_path.name} → {output_format.upper()}")
+            print(f"  ✓ Success: {output_format.upper()} created in {output_dir.relative_to(Path.cwd())}")
             return True
         else:
-            print(f"❌ Failed: {notebook_path.name} → {output_format.upper()}")
-            print(f"Error: {result.stderr}")
+            print(f"  ✗ Failed: {output_format.upper()} conversion")
+            if result.stderr:
+                print(f"  Error: {result.stderr[:200]}")
             return False
             
     except Exception as e:
-        print(f"❌ Exception converting {notebook_path.name}: {e}")
+        print(f"  ✗ Exception: {e}")
         return False
 
 def main():
@@ -69,7 +73,7 @@ def main():
         if convert_notebook(notebook, "webpdf"):
             pdf_success += 1
     
-    print(f"\n🎉 Conversion Summary:")
+    print("\n🎉 Conversion Summary:")
     print(f"   📊 Total notebooks: {total}")
     print(f"   🌐 HTML success: {html_success}/{total}")
     print(f"   📄 PDF success: {pdf_success}/{total}")
