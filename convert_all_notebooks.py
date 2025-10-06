@@ -28,9 +28,10 @@ def convert_notebook(notebook_path, output_format="html"):
             "--output-dir", str(output_dir),
         ]
         
-        # Add template if it exists and format is HTML or PDF
+        # Only add template for A1 notebooks (assignment)
         if TEMPLATE_PATH.exists() and output_format in ["html", "webpdf", "pdf"]:
-            cmd.extend(["--template", str(TEMPLATE_PATH)])
+            if "A1" in str(notebook_path):
+                cmd.extend(["--template", str(TEMPLATE_PATH)])
         
         cmd.append(str(notebook_path))
         
