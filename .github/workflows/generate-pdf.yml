@@ -1,0 +1,105 @@
+name: Generate PDF Reports (repo-wide)
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '**/*.ipynb'
+      - 'A1/templates/**'
+      - '.github/workflows/generate-pdf.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '**/*.ipynb'
+  workflow_dispatch:
+
+jobs:
+  generate-pdfs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v3
+
+      - name: Install dependencies (repo root)
+        run: |
+          uv sync
+
+      - name: Install system dependencies for PDF
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            pandoc \
+            texlive-xetex \
+            texlive-fonts-recommended \
+            texlive-plain-generic \
+            wkhtmltopdf
+
+      - name: Find notebooks
+        id: find_notebooks
+        run: |
+          mkdir -p A1/outputs
+          # Find all .ipynb files in the repo and print a newline-separated list
+          find . -type f -name '*.ipynb' > notebooks.txt || true
+          echo "notebooks<<EOF" >> $GITHUB_OUTPUT
+          cat notebooks.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Convert notebooks to HTML and PDF
+        run: |
+          set -euo pipefail
+          while IFS= read -r nb; do
+            # strip leading ./ if present
+            nb_path=${nb#./}
+            echo "Processing $nb_path"
+            nb_name=$(basename "$nb_path" .ipynb)
+            out_dir=$(dirname "$nb_path")/outputs
+            mkdir -p "$out_dir"
+
+            # HTML
+            uv run jupyter nbconvert --to html --template A1/templates/custom_report.tpl --output-dir "$out_dir" --output "${nb_name}.html" "$nb_path" || true
+
+            # webpdf (preferred). Fallback to HTML->wkhtmltopdf if webpdf fails
+            if ! uv run jupyter nbconvert --to webpdf --template A1/templates/custom_report.tpl --output-dir "$out_dir" --output "${nb_name}.pdf" "$nb_path"; then
+              if [ -f "$out_dir/${nb_name}.html" ]; then
+                wkhtmltopdf --enable-local-file-access --page-size A4 --margin-top 15mm --margin-bottom 15mm --margin-left 15mm --margin-right 15mm "$out_dir/${nb_name}.html" "$out_dir/${nb_name}.pdf" || true
+              fi
+            fi
+          done < notebooks.txt
+
+      - name: Upload generated artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-notebook-reports
+          path: |
+            **/outputs/*.html
+            **/outputs/*.pdf
+          retention-days: 90
+
+      - name: (Optional) Kraken MCP server integration
+        if: always()
+        run: |
+          echo "Placeholder: integrate with Kraken MCP server here."
+          echo "If you have a specific Kraken MCP action, replace this step with that action and provide necessary secrets/config."
+
+      - name: Create release on main (if push to main)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: report-${{ github.sha }}
+          name: Notebook Reports ${{ github.sha }}
+          body: |
+            Automated HTML/PDF generation for all notebooks changed in this push.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

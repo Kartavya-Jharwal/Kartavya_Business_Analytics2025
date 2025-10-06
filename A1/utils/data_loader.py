@@ -96,14 +96,6 @@ def create_gdp_categories(df, low_threshold=5000, high_threshold=15000):
     )
     
     return df
-        elif gdp < high_threshold:
-            return "Medium GDP"
-        else:
-            return "High GDP"
-
-    df["GDP_Category"] = df["GDP_per_capita"].apply(categorize_gdp)
-
-    return df
 
 
 @st.cache_data
