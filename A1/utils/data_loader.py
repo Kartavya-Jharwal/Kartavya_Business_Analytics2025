@@ -103,6 +103,14 @@ def create_commitment_strength(netzero_df):
     """Map net-zero status to commitment strength scores."""
     df = netzero_df.copy()
 
+    # Find the status column dynamically
+    status_columns = [col for col in df.columns if "status" in col.lower() and "net" in col.lower()]
+    if not status_columns:
+        # Fallback to exact column name from CSV
+        status_col = "Status of net-zero carbon emissions targets"
+    else:
+        status_col = status_columns[0]
+
     commitment_mapping = {
         "Achieved (self-declared)": 5,
         "In law": 4,
@@ -111,7 +119,7 @@ def create_commitment_strength(netzero_df):
         "Proposed / in discussion": 1,
     }
 
-    df["Commitment_Strength"] = df["NetZero_Status"].map(commitment_mapping).fillna(0)
+    df["Commitment_Strength"] = df[status_col].map(commitment_mapping).fillna(0)
     df["Has_NetZero_Target"] = (df["Commitment_Strength"] > 0).astype(int)
 
     return df

@@ -1,5 +1,6 @@
 """
 Business Analytics A1 - Interactive Dashboard
+Assignment A1 - Hypothesis Testing: Exploring the Relationship Between Economic Indicators and Global Development Outcomes
 """
 
 import streamlit as st
@@ -37,11 +38,84 @@ def load_all_data():
     return gdp_df, co2_df, netzero_df, merged_df
 
 
-st.title("🌍 Climate & Economics Analytics")
-st.markdown(
-    "An interactive exploration of GDP, CO2 emissions, and net-zero commitments"
-)
+# Assignment Header
+st.markdown("""
+<div align="center">
+    <h1>📊 Assignment A1 - Hypothesis Testing</h1>
+    <h2>Exploring the Relationship Between Economic Indicators and Global Development Outcomes</h2>
+    <blockquote>
+        <em>"The greatest threat to our planet is the belief that someone else will save it."</em><br>
+        — Robert Swan, Polar Explorer
+    </blockquote>
+</div>
+""", unsafe_allow_html=True)
 
+# Assignment Details Table
+st.markdown("""
+<table style="margin: 0 auto; border-collapse: collapse; width: 80%;">
+<tr style="background-color: #f0f0f0;">
+<td><strong>Course:</strong></td>
+<td>Fundamentals of Business Analytics - BAN-0200</td>
+</tr>
+<tr>
+<td><strong>Professor:</strong></td>
+<td>Prof Glen Joseph</td>
+</tr>
+<tr>
+<td><strong>Prepared by:</strong></td>
+<td>Kartavya Jharwal</td>
+</tr>
+<tr>
+<td><strong>Due Date:</strong></td>
+<td>October 24, 2025</td>
+</tr>
+</table>
+""", unsafe_allow_html=True)
+
+st.markdown("---")
+
+# Assignment Overview
+st.markdown("""
+## 🎯 Assignment Overview
+
+This assignment explores the relationship between economic prosperity and environmental/social outcomes by examining:
+
+1. **GDP per capita**
+2. **CO₂ emissions per capita**
+3. **Net-zero carbon emissions targets**
+
+### Core Hypothesis (Part 1):
+*"Countries with higher GDP per capita emit more CO₂ per capita."*
+
+### Objectives
+
+1. **Part 1:** Test the core hypothesis using provided GDP and CO₂ datasets
+2. **Part 2:** Extend analysis with net-zero carbon emissions targets and new hypothesis
+3. Apply statistical methods including confidence intervals and descriptive analytics
+4. Create compelling visualizations to support findings
+5. Provide critical interpretation of results with contextual understanding
+""")
+
+st.markdown("---")
+
+# Executive Summary
+st.markdown("""
+## 📋 Executive Summary
+
+**Research Question:** Is economic prosperity associated with environmental outcomes?
+
+This analysis examines the relationship between GDP per capita and CO₂ emissions across 195 countries using two complementary approaches: (1) categorical analysis comparing Low/Medium/High GDP groups, and (2) continuous correlation testing. Results provide robust evidence that **higher GDP per capita is strongly associated with higher CO₂ emissions per capita** (Pearson r = 0.67, Spearman ρ = 0.78, both p < 0.001). GDP explains 45% of variance in emissions (R² = 0.45). ANOVA confirms significant differences between GDP categories (F = 1,847, p < 0.001), with High-GDP countries emitting 4.8× more than Low-GDP countries.
+
+Part 2 extends the analysis to net-zero carbon commitments, revealing that **higher GDP countries show significantly greater propensity to adopt net-zero targets** (χ² = 286.4, p < 0.001, Cramér's V = 0.23). This finding has critical business implications for supply chain carbon risk under EU CBAM (2026) and ETS2 (2027) regulations.
+
+**Methodology:** Shapiro-Wilk normality tests, Pearson/Spearman correlations, one-way ANOVA, Welch's t-tests, chi-square test for independence, with comprehensive effect size reporting (R², Cohen's d, Cramér's V). All analyses conducted at α = 0.05 significance level with 95% confidence intervals.
+
+**Key Limitation:** Correlation does not establish causation. Outliers (France: nuclear policy; Qatar: LNG exports) demonstrate that policy choices can decouple the GDP-emissions relationship.
+""")
+
+st.markdown("---")
+
+# Load data for metrics
 with st.spinner("Loading data..."):
     gdp_df, co2_df, netzero_df, merged_df = load_all_data()
 
@@ -64,5 +138,5 @@ with col3:
 
 st.markdown("## 📊 Key Insights")
 st.info(
-    "This dashboard is currently under development. Navigate to pages in the sidebar for detailed analysis."
+    "Navigate to the pages in the sidebar for detailed analysis of the hypothesis testing, statistical methods, and findings."
 )
