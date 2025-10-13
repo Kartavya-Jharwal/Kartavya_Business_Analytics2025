@@ -3,6 +3,9 @@ name: Generate PDF Report
 on:
   push:
     branches: [ main ]
+    # keep the path filter so the workflow is eligible, but only run the job
+    # when assignment.ipynb was added or modified in the head commit (avoids running
+    # for unrelated commits). Workflow can still be manually dispatched.
     paths:
       - 'A1/assignment.ipynb'
       - 'A1/templates/**'
@@ -16,33 +19,88 @@ on:
 jobs:
   generate-pdf:
     runs-on: ubuntu-latest
-    
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
+      
+    # Only run the job automatically if the head commit added/modified the notebook.
+    # This avoids the job running on every push that doesn't touch the notebook.
+    # Manual dispatch and PR events are still allowed.
+    - name: Determine whether to continue
+      id: check_changes
+      run: |
+        echo "head_event=${{ github.event_name }}" > check_change.txt
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          echo "continue=true" > continue.txt
+          exit 0
+        fi
+        # For push events, inspect the head commit added/modified files
+        if [ "${{ github.event_name }}" = "push" ]; then
+          ADDED="${{ toJson(github.event.head_commit.added) }}"
+          MODIFIED="${{ toJson(github.event.head_commit.modified) }}"
+          echo "added=$ADDED" > added.txt
+          echo "modified=$MODIFIED" > modified.txt
+          echo "$ADDED $MODIFIED" | grep -q 'A1/assignment.ipynb' && echo "continue=true" > continue.txt || echo "continue=false" > continue.txt
+        else
+          echo "continue=true" > continue.txt
+        fi
+        cat continue.txt
+
+    - name: Stop job if notebook not changed
+      if: ${{ always() && steps.check_changes.outputs == '' }}
+      run: |
+        # If continue.txt exists and contains false, exit with a special code to skip
+        if [ -f continue.txt ]; then
+          CONT=$(cat continue.txt)
+          if [ "$CONT" = "continue=false" ]; then
+            echo "No notebook change detected in head commit — skipping PDF generation.";
+            exit 0
+          fi
+        fi
       
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
         
+    - name: Cache pip downloads
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('A1/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
     - name: Install UV
       uses: astral-sh/setup-uv@v3
-      
-    - name: Install dependencies
+
+    - name: Install Python dependencies (uv sync)
       working-directory: A1
       run: |
         uv sync
-        
-    - name: Install system dependencies for PDF
+
+    - name: Install Pandoc (action)
+      uses: jgm/pandoc-action@v2
+      with:
+        pandoc-version: '3.1.7'
+
+    - name: Cache pandoc directory
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.local/bin/pandoc
+          ~/.local/share/pandoc
+        key: ${{ runner.os }}-pandoc-${{ hashFiles('A1/templates/**') }}
+        restore-keys: |
+          ${{ runner.os }}-pandoc-
+
+    - name: Install minimal system dependency (wkhtmltopdf fallback)
       run: |
         sudo apt-get update
-        sudo apt-get install -y \
-          pandoc \
-          texlive-xetex \
-          texlive-fonts-recommended \
-          texlive-plain-generic \
-          wkhtmltopdf
+        sudo apt-get install -y wkhtmltopdf || true
           
     - name: Generate HTML report
       working-directory: A1
@@ -57,21 +115,25 @@ jobs:
     - name: Generate PDF from HTML
       working-directory: A1
       run: |
+        set -o pipefail
+        # Prefer nbconvert webpdf (requires playwright/pyppeteer); fallback to wkhtmltopdf
         uv run jupyter nbconvert \
           --to webpdf \
           --template templates/custom_report.tpl \
           --output-dir outputs \
           --output assignment_report.pdf \
-          assignment.ipynb || \
-        wkhtmltopdf \
-          --enable-local-file-access \
-          --page-size A4 \
-          --margin-top 15mm \
-          --margin-bottom 15mm \
-          --margin-left 15mm \
-          --margin-right 15mm \
-          outputs/assignment_report.html \
-          outputs/assignment_report.pdf
+          assignment.ipynb || (
+            echo "webpdf failed — falling back to wkhtmltopdf";
+            wkhtmltopdf \
+              --enable-local-file-access \
+              --page-size A4 \
+              --margin-top 15mm \
+              --margin-bottom 15mm \
+              --margin-left 15mm \
+              --margin-right 15mm \
+              outputs/assignment_report.html \
+              outputs/assignment_report.pdf
+          )
           
     - name: Upload HTML artifact
       uses: actions/upload-artifact@v4
