@@ -5,33 +5,9 @@ Core Hypothesis: "Countries with higher GDP per capita emit more CO₂ per capit
 
 import streamlit as st
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
-from scipy import stats
-from scipy.stats import (
-    shapiro,
-    skew,
-    kurtosis,
-    pearsonr,
-    spearmanr,
-    f_oneway,
-    ttest_ind,
-    chi2_contingency,
-)
-from itertools import combinations
+from scipy.stats import shapiro, skew, kurtosis
 import warnings
-import sys
-import platform
-from datetime import datetime
-
-# Suppress warnings for cleaner output
-warnings.filterwarnings("ignore")
-
-# Set plotting style and parameters
-plt.style.use("seaborn-v0_8")
-plt.rcParams["figure.figsize"] = (12, 8)
-plt.rcParams["font.size"] = 11
 
 from utils import (
     load_gdp_data,
@@ -40,6 +16,16 @@ from utils import (
     create_gdp_categories,
     get_custom_css,
 )
+from utils.analysis import compute_correlations, compute_anova_and_pairwise
+
+
+# Suppress warnings for cleaner output
+warnings.filterwarnings("ignore")
+
+# Set plotting style and parameters
+plt.style.use("seaborn-v0_8")
+plt.rcParams["figure.figsize"] = (12, 8)
+plt.rcParams["font.size"] = 11
 
 st.set_page_config(
     page_title="Part 1: Hypothesis Testing", page_icon="📊", layout="wide"
@@ -386,3 +372,66 @@ else:
     """)
 
 st.info("Large sample size (n > 1000) provides robustness via Central Limit Theorem")
+
+# Correlation analysis (Pearson and Spearman)
+st.markdown("---")
+st.markdown("## Correlation Analysis: Pearson & Spearman")
+
+with st.spinner("Computing correlations..."):
+    corr_res = compute_correlations(analysis_df, gdp_col, co2_col)
+
+if corr_res is None:
+    st.warning("Not enough data to compute correlations")
+else:
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("### Pearson Correlation (linear)")
+        st.write(f"**r:** {corr_res['pearson_r']:.3f}")
+        st.write(f"**P-value:** {corr_res['pearson_p']:.4g}")
+        st.write(f"**R²:** {corr_res['r_squared']:.3f}")
+
+    with col2:
+        st.markdown("### Spearman Correlation (rank)")
+        st.write(f"**ρ:** {corr_res['spearman_rho']:.3f}")
+        st.write(f"**P-value:** {corr_res['spearman_p']:.4g}")
+
+    if corr_res['pearson_p'] < 0.05:
+        st.success("✓ Pearson correlation is statistically significant (p < 0.05)")
+    else:
+        st.info("Pearson correlation not statistically significant at α=0.05")
+
+# ANOVA and pairwise comparisons
+st.markdown("---")
+st.markdown("## ANOVA & Pairwise Comparisons (Welch's t-tests)")
+
+with st.spinner("Running ANOVA and pairwise tests..."):
+    anova_stat, anova_p, pairwise_df = compute_anova_and_pairwise(analysis_df, co2_col, "GDP_Category")
+
+if anova_stat is None:
+    st.warning("Insufficient groups/data to run ANOVA")
+else:
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("### One-way ANOVA")
+        st.write(f"**F-statistic:** {anova_stat:.4f}")
+        st.write(f"**P-value:** {anova_p:.4g}")
+        if anova_p is not None and anova_p < 0.05:
+            st.success("✓ Significant differences between GDP categories (reject H₀)")
+        else:
+            st.info("No significant differences detected between GDP categories (fail to reject H₀)")
+
+    with col2:
+        st.markdown("### Pairwise Comparisons (Welch)")
+        if pairwise_df.empty:
+            st.write("No pairwise results available")
+        else:
+            # Show a nicely formatted dataframe
+            display_df = pairwise_df.copy()
+            # round numeric columns for display
+            for c in ["t_stat", "p_value", "cohen_d", "mean1", "mean2"]:
+                if c in display_df.columns:
+                    display_df[c] = display_df[c].round(4)
+            st.dataframe(display_df, use_container_width=True)
+
+    st.markdown("---")
+    st.info("Pairwise tests use Welch's t-test (unequal variances). Cohen's d approximates effect size.")
