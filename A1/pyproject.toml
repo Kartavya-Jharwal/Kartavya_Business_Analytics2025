@@ -9,26 +9,23 @@ dependencies = [
     "pandas>=2.2.0",
     "numpy>=1.26.0",
     "scipy>=1.11.0",
-    
     # Visualization
     "matplotlib>=3.8.0",
     "seaborn>=0.13.0",
     "plotly>=5.18.0",
-    
     # Streamlit and enhancements
     "streamlit>=1.50.0",
     "streamlit-lottie>=0.0.5",
     "streamlit-extras>=0.4.0",
-    
     # Jupyter and PDF export
     "jupyter>=1.0.0",
     "notebook>=7.0.0",
     "nbconvert>=7.16.0",
     "nbformat>=5.9.0",
-    
     # PDF rendering requirements
     "pypandoc>=1.13",
     "pillow>=10.0.0",
+    "rio-ui>=0.11.1",
 ]
 
 [project.optional-dependencies]
