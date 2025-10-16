@@ -24,18 +24,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install UV (astral-sh/setup-uv)
+        uses: astral-sh/setup-uv@v6
         with:
-          python-version: '3.12'
-
-      - name: Install UV
-        uses: astral-sh/setup-uv@v3
-        with:
+          # Pin uv to a known good version for reproducible CI
+          version: "0.9.3"
           enable-cache: true
 
-      - name: Install dependencies
-        run: uv sync
+      - name: Set up Python
+        # Use uv's project pinning (recommended) or fallback to setup-python
+        run: |
+          # Prefer uv-managed python to respect project pins
+          if uv --version >/dev/null 2>&1; then
+            echo "Using uv to install Python as configured by the project"
+            uv python install
+          else
+            echo "uv not found; falling back to actions/setup-python@v5"
+            echo "::warning::uv not available, this job may be slower"
+            uses: actions/setup-python@v5
+            with:
+              python-version: '3.12'
+
+      - name: Install project dependencies (deterministic)
+        run: uv sync --locked --all-extras --dev
 
       - name: Cache system dependencies
         id: cache-system-deps
@@ -59,69 +70,51 @@ jobs:
             texlive-plain-generic \
             wkhtmltopdf
 
-      - name: Find and convert notebooks
+      - name: Find and convert notebooks (same-directory outputs)
         run: |
           set -euo pipefail
-          
+
+          echo "📗 Policy: Notebooks will be converted and outputs written into the same directory as each .ipynb"
+
           # Find all notebooks excluding hidden directories
           find . -type f -name '*.ipynb' -not -path '*/\.*' | while IFS= read -r notebook; do
             # Remove leading ./
             nb_path="${notebook#./}"
             nb_dir="$(dirname "$nb_path")"
             nb_name="$(basename "$nb_path" .ipynb)"
-            
+
             echo "📓 Processing: $nb_path"
-            
-            # Create outputs directory in the same location as the notebook
-            mkdir -p "$nb_dir"
-            
+
             # Determine if we should use custom template (only for A1 notebooks)
             TEMPLATE_ARG=""
             if [[ "$nb_path" == A1/* ]]; then
               TEMPLATE_ARG="--template A1/templates/custom_report.tpl"
             fi
-            
+
             # Convert to HTML
-            echo "  → Generating HTML..."
-            if uv run jupyter nbconvert \
-              --to html \
-              $TEMPLATE_ARG \
-              --output-dir "$nb_dir" \
-              --output "${nb_name}.html" \
-              "$nb_path"; then
+            echo "  → Generating HTML: ${nb_dir}/${nb_name}.html"
+            if uv run jupyter nbconvert --to html $TEMPLATE_ARG --output-dir "$nb_dir" --output "${nb_name}.html" "$nb_path"; then
               echo "  ✓ HTML created: ${nb_dir}/${nb_name}.html"
             else
-              echo "  ✗ HTML conversion failed"
+              echo "  ✗ HTML conversion failed for ${nb_path}"
             fi
-            
+
             # Convert to PDF (try webpdf first, fallback to wkhtmltopdf)
-            echo "  → Generating PDF..."
-            if uv run jupyter nbconvert \
-              --to webpdf \
-              $TEMPLATE_ARG \
-              --output-dir "$nb_dir" \
-              --output "${nb_name}.pdf" \
-              "$nb_path"; then
+            echo "  → Generating PDF: ${nb_dir}/${nb_name}.pdf"
+            # Use output basename (no extension) to avoid double-extension issues
+            if uv run jupyter nbconvert --to webpdf $TEMPLATE_ARG --output-dir "$nb_dir" --output "${nb_name}" "$nb_path"; then
               echo "  ✓ PDF created: ${nb_dir}/${nb_name}.pdf"
             elif [[ -f "${nb_dir}/${nb_name}.html" ]]; then
-              echo "  → Fallback: Using wkhtmltopdf..."
-              if wkhtmltopdf \
-                --enable-local-file-access \
-                --page-size A4 \
-                --margin-top 15mm \
-                --margin-bottom 15mm \
-                --margin-left 15mm \
-                --margin-right 15mm \
-                "${nb_dir}/${nb_name}.html" \
-                "${nb_dir}/${nb_name}.pdf"; then
+              echo "  → Fallback: Using wkhtmltopdf to convert HTML to PDF"
+              if wkhtmltopdf --enable-local-file-access --page-size A4 --margin-top 15mm --margin-bottom 15mm --margin-left 15mm --margin-right 15mm "${nb_dir}/${nb_name}.html" "${nb_dir}/${nb_name}.pdf"; then
                 echo "  ✓ PDF created via wkhtmltopdf: ${nb_dir}/${nb_name}.pdf"
               else
-                echo "  ✗ PDF conversion failed"
+                echo "  ✗ PDF conversion failed for ${nb_path} (wkhtmltopdf fallback failed)"
               fi
             else
-              echo "  ✗ PDF conversion failed (no HTML available)"
+              echo "  ✗ PDF conversion failed for ${nb_path} (no HTML available)"
             fi
-            
+
             echo ""
           done
 

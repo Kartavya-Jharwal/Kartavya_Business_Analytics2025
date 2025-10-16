@@ -29,6 +29,22 @@ uv run streamlit run app.py
 
 This will start the Streamlit server and you can view the app in your browser at `http://localhost:8501`
 
+## Static interactive site
+
+This repository now includes a static single-page interactive site built for quick local exploration of the CSV datasets.
+
+To view it locally:
+
+1. From the repository root, start a simple HTTP server so the browser can fetch the CSV files by relative paths:
+
+```powershell
+python -m http.server 8000
+```
+
+2. Open your browser to http://localhost:8000/site/
+
+The `site/` folder contains `index.html`, `script.js`, and `styles.css` and uses Plotly to render interactive charts from the CSVs present at the repository root.
+
 ## Project Structure
 
 ```

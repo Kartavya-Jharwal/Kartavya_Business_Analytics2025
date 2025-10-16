@@ -23,7 +23,7 @@ Recommended workflows now (single root UV)
 
 ```pwsh
 cd <repo-root>
-uv sync
+uv sync --locked --all-extras --dev
 ```
 
 - Run the Streamlit app (root uv still runs the app from A1):
@@ -33,26 +33,27 @@ cd <repo-root>
 uv run streamlit run A1/app.py
 ```
 
-- Generate notebook HTML/PDF locally (mirrors CI; processes all notebooks in repo):
+- Generate notebook HTML/PDF locally (mirrors CI; processes all notebooks in repo). Note: outputs are written to the same directory as the source notebook by policy:
 
 ```pwsh
 cd <repo-root>
-uv run jupyter nbconvert --to html --template A1/templates/custom_report.tpl --output-dir <notebook-folder>/outputs --output <notebook-name>.html <path-to-notebook>.ipynb
-uv run jupyter nbconvert --to webpdf --template A1/templates/custom_report.tpl --output-dir <notebook-folder>/outputs --output <notebook-name>.pdf <path-to-notebook>.ipynb
+# Example: writes files next to the notebook (same-directory policy)
+uv run jupyter nbconvert --to html --template A1/templates/custom_report.tpl --output-dir <notebook-folder> --output <notebook-name>.html <path-to-notebook>.ipynb
+uv run jupyter nbconvert --to webpdf --template A1/templates/custom_report.tpl --output-dir <notebook-folder> --output <notebook-name>.pdf <path-to-notebook>.ipynb
 ```
 
 CI and workflow notes
-- The repository-level workflow is `.github/workflows/generate-pdf.yml` (repo root). It:
-  - Checks out the repo, sets up Python 3.12, installs UV, runs `uv sync` at repo root.
+ - The repository-level workflow is `.github/workflows/generate-pdf.yml` (repo root). It:
+  - Checks out the repo, installs uv (astral-sh/setup-uv@v6), and runs `uv sync --locked --all-extras --dev`.
   - Installs system PDF deps (pandoc, TeX packages, wkhtmltopdf) on runner.
-  - Runs `uv run jupyter nbconvert` using the template at `A1/templates/custom_report.tpl` and writes outputs to `A1/outputs/`.
+  - Runs `uv run jupyter nbconvert` using the template at `A1/templates/custom_report.tpl` and writes outputs to the same directory as each notebook.
   - Uploads HTML/PDF artifacts and (on pushes to main) creates a GitHub release with the generated artifacts.
 
 Repository-specific conventions (do not change unless intentional)
 - Data loading: `A1/utils/data_loader.py` uses `@st.cache_data` for all loaders/transformers — preserve or consciously refactor caching behavior.
 - Column naming: CSVs use `Entity` originally; data loaders rename to `Country`. New transforms should keep the `Country` column.
 - Styling: `A1/utils/styling.py` exposes `get_custom_css()` and theming helpers used by `A1/app.py`.
-- Outputs: CI and local nbconvert write to `A1/outputs/` — tests, scripts, and the workflow expect that path.
+-- Outputs: CI and local nbconvert write outputs to the same directory as each source notebook (no mandatory `outputs/` folder). Some older docs may still reference `A1/outputs/` — those will be updated shortly.
 
 Integration points and edge cases
 - PDF toolchain: CI installs pandoc + TeX + wkhtmltopdf. On Windows, prefer `--to webpdf` (nbconvert) or install wkhtmltopdf/pandoc locally.

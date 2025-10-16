@@ -20,8 +20,9 @@ After:  Class_Assignments/week5/Week_5_Session_1.pdf
   with:
     cache: 'pip'
     
-- uses: astral-sh/setup-uv@v3
+- uses: astral-sh/setup-uv@v6
   with:
+    version: "0.9.3"
     enable-cache: true
 ```
 

@@ -60,104 +60,72 @@ jobs:
           fi
         fi
       
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - name: Install UV (astral-sh/setup-uv)
+      uses: astral-sh/setup-uv@v6
       with:
-        python-version: '3.12'
-        
-    - name: Cache pip downloads
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('A1/pyproject.toml') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+        version: "0.9.3"
+        enable-cache: true
 
-    - name: Install UV
-      uses: astral-sh/setup-uv@v3
-
-    - name: Install Python dependencies (uv sync)
+    - name: Set up Python and install dependencies
       working-directory: A1
       run: |
-        uv sync
+        # Install Python via uv to respect project pins, then sync deps deterministically
+        uv python install || echo "uv python install failed; ensure uv is available"
+        uv sync --locked --all-extras --dev
 
-    - name: Install Pandoc (action)
-      uses: jgm/pandoc-action@v2
-      with:
-        pandoc-version: '3.1.7'
-
-    - name: Cache pandoc directory
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.local/bin/pandoc
-          ~/.local/share/pandoc
-        key: ${{ runner.os }}-pandoc-${{ hashFiles('A1/templates/**') }}
-        restore-keys: |
-          ${{ runner.os }}-pandoc-
+    - name: Install system dependencies for PDF (pandoc)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y pandoc || true
 
     - name: Install minimal system dependency (wkhtmltopdf fallback)
       run: |
         sudo apt-get update
         sudo apt-get install -y wkhtmltopdf || true
-          
-    - name: Generate HTML report
-      working-directory: A1
-      run: |
-        uv run jupyter nbconvert \
-          --to html \
-          --template templates/custom_report.tpl \
-          --output-dir outputs \
-          --output assignment_report.html \
-          assignment.ipynb
-          
-    - name: Generate PDF from HTML
+
+    - name: Convert assignment notebook (same-directory outputs)
       working-directory: A1
       run: |
         set -o pipefail
-        # Prefer nbconvert webpdf (requires playwright/pyppeteer); fallback to wkhtmltopdf
-        uv run jupyter nbconvert \
-          --to webpdf \
-          --template templates/custom_report.tpl \
-          --output-dir outputs \
-          --output assignment_report.pdf \
-          assignment.ipynb || (
-            echo "webpdf failed — falling back to wkhtmltopdf";
-            wkhtmltopdf \
-              --enable-local-file-access \
-              --page-size A4 \
-              --margin-top 15mm \
-              --margin-bottom 15mm \
-              --margin-left 15mm \
-              --margin-right 15mm \
-              outputs/assignment_report.html \
-              outputs/assignment_report.pdf
-          )
-          
+        echo "📗 Policy: Outputs will be written to the same directory as assignment.ipynb"
+
+        # Preferred: nbconvert webpdf (via uv run)
+        # Use output basename to avoid double-extension in some nbconvert versions
+        if uv run jupyter nbconvert --to webpdf --template templates/custom_report.tpl --output assignment_report assignment.ipynb; then
+          echo "  ✓ PDF created: A1/assignment_report.pdf"
+        else
+          echo "  → webpdf failed; generating HTML and falling back to wkhtmltopdf"
+          uv run jupyter nbconvert --to html --template templates/custom_report.tpl --output assignment_report.html assignment.ipynb
+          if wkhtmltopdf --enable-local-file-access --page-size A4 --margin-top 15mm --margin-bottom 15mm --margin-left 15mm --margin-right 15mm A1/assignment_report.html A1/assignment_report.pdf; then
+            echo "  ✓ PDF created via wkhtmltopdf: A1/assignment_report.pdf"
+          else
+            echo "  ✗ PDF creation failed"
+          fi
+        fi
+
     - name: Upload HTML artifact
       uses: actions/upload-artifact@v4
       with:
         name: assignment-report-html
-        path: A1/outputs/assignment_report.html
+        path: A1/assignment_report.html
         retention-days: 90
-        
+
     - name: Upload PDF artifact
       uses: actions/upload-artifact@v4
       with:
         name: assignment-report-pdf
-        path: A1/outputs/assignment_report.pdf
+        path: A1/assignment_report.pdf
         retention-days: 90
-        
+
     - name: Create outputs directory for release
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       run: mkdir -p release-outputs
-      
+
     - name: Copy files for release
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       run: |
-        cp A1/outputs/assignment_report.html release-outputs/
-        cp A1/outputs/assignment_report.pdf release-outputs/
+        cp A1/assignment_report.html release-outputs/ || true
+        cp A1/assignment_report.pdf release-outputs/ || true
         
     - name: Generate timestamp
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
