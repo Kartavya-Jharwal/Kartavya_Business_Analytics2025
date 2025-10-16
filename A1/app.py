@@ -56,22 +56,19 @@ window.addEventListener('scroll', function() {
 render_global_branding()
 
 # ===== SHOW PREMIUM SPLASH SCREEN =====
-# Show splash overlay with logo
+# Show splash overlay with logo BEFORE loading any data
 assets_dir = Path(__file__).parent / "assets"
 logo_path = assets_dir / "CarbonSeer_png.png"
 
-# Optimize splash screen to show only once per session
+# Show splash screen immediately (will stay visible until data loads)
 if "splash_shown" not in st.session_state:
-    show_splash_overlay(logo_path, duration=2.5)
-    st.session_state["splash_shown"] = True
+    st.session_state["data_loaded"] = False
+    show_splash_overlay(logo_path, duration=1.5, wait_for_data=True)
 
 # ===== ADD LOGO TO SIDEBAR =====
 st.logo(str(logo_path), icon_image=str(logo_path))
 
-# ===== RENDER SIDEBAR RESOURCES =====
-render_sidebar_resources()
-
-
+# ===== LOAD ALL DATA (WHILE SPLASH IS VISIBLE) =====
 @st.cache_data
 def load_all_data():
     """Load and prepare all datasets with caching for optimal performance."""
@@ -82,6 +79,15 @@ def load_all_data():
     merged_df = create_gdp_categories(merged_df)
     netzero_df = create_commitment_strength(netzero_df)
     return gdp_df, co2_df, netzero_df, merged_df
+
+# Load all data (splash screen stays visible during this)
+gdp_df, co2_df, netzero_df, merged_df = load_all_data()
+
+# Mark data as loaded - this will trigger splash removal
+st.session_state["data_loaded"] = True
+
+# ===== RENDER SIDEBAR RESOURCES =====
+render_sidebar_resources()
 
 
 # ===== STUNNING HERO SECTION =====
