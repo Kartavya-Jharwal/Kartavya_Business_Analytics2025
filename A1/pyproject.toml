@@ -1,7 +1,7 @@
 [project]
-name = "a1"
+name = "carbonseer"
 version = "0.1.0"
-description = "Business Analytics A1 - GDP, CO₂ Emissions, and Net-Zero Targets Analysis"
+description = "CarbonSeer - Carbon Risk Analytics Dashboard for GDP, CO₂ Emissions, and Net-Zero Targets Analysis"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -35,7 +35,18 @@ dev = [
 ]
 
 [tool.uv]
-dev-dependencies = []
+dev-dependencies = [
+    "pandas",
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "seaborn",
+    "plotly",
+    "streamlit",
+    "streamlit-lottie",
+    "streamlit-extras",
+    "pillow",
+]
 
 [build-system]
 requires = ["hatchling"]

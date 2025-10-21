@@ -1,12 +1,36 @@
-# Basic Streamlit App
+# CarbonSeer
 
-This is a basic Streamlit application created using `uv` for dependency management.
+**A Dual-Purpose Analytics & Brand Design Project**
+
+CarbonSeer is an interdisciplinary microsite combining quantitative business analytics with creative brand design. Built as a demonstration platform for **Redshaw Advisors** (a carbon consulting company), it showcases data-driven carbon risk analysis through an interactive web application.
+
+## 🎓 Academic Context
+
+### **Business Analytics (BAN-0200)** - Prof Glen Joseph
+Statistical analysis exploring:
+- GDP per capita vs CO₂ emissions correlation
+- Net-zero commitment patterns across economic development levels
+- CBAM (Carbon Border Adjustment Mechanism) business implications
+- Hypothesis testing with comprehensive effect size reporting
+
+### **Creativity in Advertising & Marketing (DSN-0303)** - Prof Lindsay Butcher
+Brand design work for Redshaw Advisors:
+- Visual identity and UI/UX design
+- Data storytelling and marketing positioning
+- Standalone microsite demonstrating consulting capabilities
+- Integration of analytical rigor with creative brand narrative
+
+## 🌍 Project Purpose
+
+CarbonSeer serves as a **demo microsite** for Redshaw Advisors, illustrating how quantitative carbon risk analysis can be presented as an accessible, visually compelling tool for business decision-making in the context of upcoming EU carbon regulations (CBAM 2026, ETS2 2027).
 
 ## Features
 
-- **Home Page**: Welcome message with user input and metrics
-- **Data Analysis**: Sample dataset with filtering capabilities
-- **Interactive Charts**: Various chart types with customizable parameters
+- **Interactive Dashboard**: Overview of global carbon risk metrics
+- **Assignment Analysis**: 10 navigable sections with statistical deep-dives
+- **Data Visualizations**: Plotly charts with custom theming
+- **Statistical Testing**: ANOVA, Chi-square, correlation analysis with effect sizes
+- **Business Intelligence**: Supply chain carbon risk assessment insights
 
 ## Setup and Installation
 

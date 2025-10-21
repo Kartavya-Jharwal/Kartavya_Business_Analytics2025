@@ -837,12 +837,12 @@ def get_custom_css():
         border-right: 2px solid rgba(139, 125, 155, 0.15);
         box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.02);
     }
-    
+
     /* Sidebar text and markdown containers */
     [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {
         padding: var(--space-lg) 0;
     }
-    
+
     [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h1,
     [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h2,
     [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3 {
@@ -853,7 +853,7 @@ def get_custom_css():
         margin: var(--space-lg) 0 var(--space-md) 0;
         transition: all var(--transition-fast);
     }
-    
+
     /* Sidebar links and nav items */
     [data-testid="stSidebar"] a {
         color: var(--color-primary) !important;
@@ -862,12 +862,12 @@ def get_custom_css():
         transition: all var(--transition-fast);
         position: relative;
     }
-    
+
     [data-testid="stSidebar"] a:hover {
         color: var(--color-primary-dark) !important;
         padding-left: 8px;
     }
-    
+
     /* Navigation link styling with active state */
     [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] a::before {
         content: '▸ ';
@@ -875,19 +875,19 @@ def get_custom_css():
         margin-right: 4px;
         transition: all var(--transition-fast);
     }
-    
+
     [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] a:hover::before {
         color: var(--color-primary);
         margin-right: 8px;
     }
-    
+
     /* Sidebar section dividers */
     [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] hr {
         margin: var(--space-lg) 0;
         border: none;
         border-top: 2px solid rgba(139, 125, 155, 0.1);
     }
-    
+
     /* Sidebar button styling */
     [data-testid="stSidebar"] .stButton > button {
         width: 100%;
@@ -902,7 +902,7 @@ def get_custom_css():
         transition: all var(--transition-fast);
         font-family: var(--font-display);
     }
-    
+
     [data-testid="stSidebar"] .stButton > button:hover {
         background: linear-gradient(135deg, 
             rgba(139, 125, 155, 0.15) 0%,
@@ -910,7 +910,7 @@ def get_custom_css():
         border-color: rgba(139, 125, 155, 0.3);
         box-shadow: 0 4px 16px rgba(139, 125, 155, 0.1);
     }
-    
+
     /* Sidebar expandable sections */
     [data-testid="stSidebar"] .streamlit-expanderHeader {
         background: linear-gradient(135deg,
@@ -924,14 +924,14 @@ def get_custom_css():
         font-weight: 600;
         color: var(--color-primary);
     }
-    
+
     [data-testid="stSidebar"] .streamlit-expanderHeader:hover {
         background: linear-gradient(135deg,
             rgba(139, 125, 155, 0.12) 0%,
             rgba(107, 155, 145, 0.08) 100%);
         box-shadow: 0 2px 8px rgba(139, 125, 155, 0.08);
     }
-    
+
     [data-testid="stSidebar"] .streamlit-expanderContent {
         background: rgba(245, 243, 240, 0.7);
         border: 1px solid rgba(139, 125, 155, 0.08);
@@ -939,47 +939,6 @@ def get_custom_css():
         border-radius: 0 0 var(--radius-md) var(--radius-md);
         padding: var(--space-lg);
     }
-    
-    /* Sidebar metric display */
-    [data-testid="stSidebar"] .metric-label {
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: #8B7D9B;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 8px;
-        opacity: 0.75;
-    }
-    
-    [data-testid="stSidebar"] .metric-value {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--color-primary);
-        font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-    
-    /* ===== PROGRESS BAR ===== */
-    .stProgress > div > div > div {
-        background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
-        border-radius: var(--radius-full);
-    }
-    
-    /* ===== LOADING SPINNER ===== */
-    .stSpinner > div {
-        border-top-color: var(--color-primary) !important;
-    }
-    
-    /* ===== COLOR UTILITY CLASSES ===== */
-    .color-purple { color: var(--color-primary); }
-    .color-teal { color: var(--color-secondary); }
-    .color-beige { color: var(--color-beige); }
-    .color-earth { color: var(--color-earth); }
-    .color-accent { color: var(--color-accent); }
-    
-    .bg-purple { background-color: var(--color-primary); }
-    .bg-teal { background-color: var(--color-secondary); }
-    .bg-beige { background-color: var(--color-beige); }
-    .bg-white { background-color: var(--color-white); }
     
     /* ===== FOOTER STYLING - STICKY ===== */
     .sticky-footer {
@@ -1170,17 +1129,6 @@ def get_custom_css():
         border-width: 0;
     }
     
-    /* ===== FIX SIDEBAR ARROW STYLING ===== */
-    .stSidebar [data-testid="stSidebarNav"] > ul > li > div[role="button"]::after {
-        content: "";
-        border: solid var(--color-gray-500);
-        border-width: 0 2px 2px 0;
-        display: inline-block;
-        padding: 3px;
-        transform: rotate(45deg);
-        -webkit-transform: rotate(45deg);
-        margin-left: 8px;
-    }
     </style>
     """
 
@@ -1197,7 +1145,7 @@ def get_plotly_theme():
             "font": {
                 "family": "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
                 "size": 13,
-                "color": "#2C2C2C"
+                "color": "#2C2C2C",
             },
             "colorway": [
                 "#8B7D9B",  # Primary Purple
@@ -1214,34 +1162,30 @@ def get_plotly_theme():
                     "size": 24,
                     "family": "Plus Jakarta Sans, Inter, sans-serif",
                     "color": "#2C2C2C",
-                    "weight": 700
+                    "weight": 700,
                 },
                 "x": 0.05,
-                "xanchor": "left"
+                "xanchor": "left",
             },
             "xaxis": {
                 "gridcolor": "rgba(0, 0, 0, 0.05)",
                 "linecolor": "#CCCCCC",
                 "zerolinecolor": "rgba(0, 0, 0, 0.1)",
                 "tickfont": {"size": 12},
-                "title": {
-                    "font": {"size": 14, "weight": 600}
-                }
+                "title": {"font": {"size": 14, "weight": 600}},
             },
             "yaxis": {
                 "gridcolor": "rgba(0, 0, 0, 0.05)",
                 "linecolor": "#CCCCCC",
                 "zerolinecolor": "rgba(0, 0, 0, 0.1)",
                 "tickfont": {"size": 12},
-                "title": {
-                    "font": {"size": 14, "weight": 600}
-                }
+                "title": {"font": {"size": 14, "weight": 600}},
             },
             "hoverlabel": {
                 "bgcolor": "rgba(255, 255, 255, 0.98)",
                 "font": {"family": "Inter, sans-serif", "size": 13},
                 "bordercolor": "#8B7D9B",
-                "align": "left"
+                "align": "left",
             },
             "legend": {
                 "bgcolor": "rgba(255, 255, 255, 0.95)",
@@ -1252,31 +1196,20 @@ def get_plotly_theme():
                 "yanchor": "top",
                 "y": 1,
                 "xanchor": "right",
-                "x": 1
+                "x": 1,
             },
             "margin": {"l": 80, "r": 80, "t": 100, "b": 80},
             "autosize": True,
             "hovermode": "closest",
-            "showlegend": True
+            "showlegend": True,
         },
         "data": {
-            "scatter": [{
-                "marker": {
-                    "line": {"width": 0.5, "color": "white"},
-                    "opacity": 0.8
-                }
-            }],
-            "bar": [{
-                "marker": {
-                    "line": {"width": 0},
-                    "opacity": 0.9
-                }
-            }],
-            "box": [{
-                "marker": {"opacity": 0.7},
-                "line": {"width": 2}
-            }]
-        }
+            "scatter": [
+                {"marker": {"line": {"width": 0.5, "color": "white"}, "opacity": 0.8}}
+            ],
+            "bar": [{"marker": {"line": {"width": 0}, "opacity": 0.9}}],
+            "box": [{"marker": {"opacity": 0.7}, "line": {"width": 2}}],
+        },
     }
 
 
@@ -1299,7 +1232,9 @@ def create_metric_card_html(value, label, delta=None, delta_color="normal"):
     """
 
 
-def render_global_branding(hult_asset: str = "assets/Hult_logo.png", hult_width: int = 110):
+def render_global_branding(
+    hult_asset: str = "assets/Hult_logo.png", hult_width: int = 110
+):
     """Render a small top-right Hult 'Developed at' lockup.
 
     This function is intentionally small and safe to call at the top of any page.
@@ -1308,19 +1243,26 @@ def render_global_branding(hult_asset: str = "assets/Hult_logo.png", hult_width:
     try:
         import streamlit as st
         from pathlib import Path
-        
+
         # Use two columns so the branding sits on the right
         cols = st.columns([6, 1])
         with cols[1]:
-            st.caption("Developed at", help="Developed at Hult International Business School")
+            st.caption(
+                "Developed at", help="Developed at Hult International Business School"
+            )
             asset_path = Path(__file__).parent.parent / hult_asset
             if asset_path.exists():
-                st.image(str(asset_path), width=hult_width, use_column_width=False)
+                # use_container_width deprecated -> use width param
+                st.image(str(asset_path), width=hult_width)
     except Exception:
         return
 
 
-def render_page_lockup(lockup_asset: str = "assets/Carbonseer.png", facemark_asset: str = "assets/CarbonSeer_png.png", width: int = 240):
+def render_page_lockup(
+    lockup_asset: str = "assets/Carbonseer.png",
+    facemark_asset: str = "assets/CarbonSeer_png.png",
+    width: int = 240,
+):
     """Render the CarbonSeer lockup (used on homepage splash and page headers).
 
     By default this centers the lockup for a neat header. Pages can call this where
@@ -1329,13 +1271,14 @@ def render_page_lockup(lockup_asset: str = "assets/Carbonseer.png", facemark_ass
     try:
         import streamlit as st
         from pathlib import Path
-        
+
         # Center the lockup using columns
         col_left, col_center, col_right = st.columns([1, 2, 1])
         with col_center:
             asset_path = Path(__file__).parent.parent / lockup_asset
             if asset_path.exists():
-                st.image(str(asset_path), width=width, use_column_width=False)
+                # use_container_width deprecated -> use width param
+                st.image(str(asset_path), width=width)
     except Exception:
         return
 
@@ -1363,14 +1306,20 @@ def sanitize_df_for_display(df):
             # 1) Try numeric
             with pd.option_context("mode.use_inf_as_na", True):
                 coerced_num = pd.to_numeric(series, errors="coerce")
-            if coerced_num.notna().sum() > 0 and coerced_num.isna().sum() < series.notna().sum():
+            if (
+                coerced_num.notna().sum() > 0
+                and coerced_num.isna().sum() < series.notna().sum()
+            ):
                 # Use numeric where possible, keep original NAs
                 df_copy[col] = coerced_num
                 continue
 
             # 2) Try datetime - removed deprecated parameter
             coerced_dt = pd.to_datetime(series, errors="coerce")
-            if coerced_dt.notna().sum() > 0 and coerced_dt.isna().sum() < series.notna().sum():
+            if (
+                coerced_dt.notna().sum() > 0
+                and coerced_dt.isna().sum() < series.notna().sum()
+            ):
                 df_copy[col] = coerced_dt
                 continue
 
@@ -1392,9 +1341,19 @@ def sanitize_df_for_display(df):
 
     # For completeness, replace Python objects like numpy types with native Python types
     for col in df_copy.columns:
-        if pd.api.types.is_integer_dtype(df_copy[col].dtype) or pd.api.types.is_float_dtype(df_copy[col].dtype):
+        if pd.api.types.is_integer_dtype(
+            df_copy[col].dtype
+        ) or pd.api.types.is_float_dtype(df_copy[col].dtype):
             # ensure numpy types cast to native
-            df_copy[col] = df_copy[col].apply(lambda x: None if pd.isna(x) else (int(x) if pd.api.types.is_integer_dtype(df_copy[col].dtype) else float(x)))
+            df_copy[col] = df_copy[col].apply(
+                lambda x: None
+                if pd.isna(x)
+                else (
+                    int(x)
+                    if pd.api.types.is_integer_dtype(df_copy[col].dtype)
+                    else float(x)
+                )
+            )
 
     return df_copy
 
@@ -1402,20 +1361,20 @@ def sanitize_df_for_display(df):
 def render_navbar(current_page: str = "Home"):
     """
     Render a modern, award-winning navbar with navigation links and page indicator.
-    
+
     Args:
         current_page: The name of the current page for active state highlighting
-    
+
     Usage:
         render_navbar("Analysis")
     """
     import streamlit as st
-    
+
     pages = {
         "🏠 Home": "Home",
         "📊 Analysis": "Analysis",
     }
-    
+
     navbar_html = """
     <div class='navbar'>
         <div class='navbar-brand'>
@@ -1423,7 +1382,7 @@ def render_navbar(current_page: str = "Home"):
         </div>
         <nav class='navbar-nav'>
     """
-    
+
     for display_name, page_name in pages.items():
         is_active = page_name == current_page
         active_class = "active" if is_active else ""
@@ -1434,67 +1393,71 @@ def render_navbar(current_page: str = "Home"):
                 </a>
             </li>
         """
-    
+
     navbar_html += """
         </nav>
     </div>
     """
-    
+
     st.markdown(navbar_html)
 
 
-def render_page_header(page_title: str, page_emoji: str = "📊", page_description: str = ""):
+def render_page_header(
+    page_title: str, page_emoji: str = "📊", page_description: str = ""
+):
     """
     Render a beautiful page header with title, emoji, and optional description.
-    
+
     Args:
         page_title: The title of the page
         page_emoji: An emoji to display before the title
         page_description: Optional description text below the title
     """
     import streamlit as st
-    
+
     header_html = f"""
     <div class='page-header'>
         <h1>{page_emoji} {page_title}</h1>
     """
-    
+
     if page_description:
         header_html += f"<p>{page_description}</p>"
-    
+
     header_html += "</div>"
-    
+
     st.html(header_html)
 
 
 def render_breadcrumbs(breadcrumb_items: list):
     """
     Render a breadcrumb navigation trail.
-    
+
     Args:
         breadcrumb_items: List of tuples (name, is_active)
                          Example: [("Home", False), ("Analysis", True)]
     """
     import streamlit as st
-    
+
     breadcrumb_html = '<div class="breadcrumb">'
-    
+
     for i, (item_name, is_active) in enumerate(breadcrumb_items):
         active_class = "active" if is_active else ""
-        breadcrumb_html += f'<span class="breadcrumb-item {active_class}">{item_name}</span>'
-        
+        breadcrumb_html += (
+            f'<span class="breadcrumb-item {active_class}">{item_name}</span>'
+        )
+
         if i < len(breadcrumb_items) - 1:
             breadcrumb_html += '<span class="breadcrumb-separator">/</span>'
-    
-    breadcrumb_html += '</div>'
-    
+
+    breadcrumb_html += "</div>"
+
     st.markdown(breadcrumb_html, unsafe_allow_html=True)
 
 
 def render_sticky_footer():
     """
     Render a professional, sticky footer with copyright, branding, and contact information.
-    
+
     Features:
     - Fixed to bottom of viewport
     - Contains copyright symbol
@@ -1503,13 +1466,37 @@ def render_sticky_footer():
     - Modern glassmorphism design
     """
     import streamlit as st
-    
-    footer_html = """
+
+    # Helper: try to load the logo lockup and embed as base64; fall back to text if missing
+    def _logo_data_url(asset_path: str = "assets/CarbonSeer_png.png") -> str:
+        from pathlib import Path
+        import base64
+
+        p = Path(__file__).parent.parent / asset_path
+        if not p.exists():
+            return ""
+
+        try:
+            data = p.read_bytes()
+            b64 = base64.b64encode(data).decode("utf-8")
+            # infer mime type from suffix
+            suffix = p.suffix.lower().lstrip(".")
+            mime = f"image/{suffix if suffix != 'png' else 'png'}"
+            return f"data:{mime};base64,{b64}"
+        except Exception:
+            return ""
+
+    logo_url = _logo_data_url()
+    if logo_url:
+        logo_img = f"<img src='{logo_url}' alt='CarbonSeer logo' style='height:32px; vertical-align:middle; margin-right:8px;'/>"
+        brand_html = f"<div class='footer-brand'>{logo_img}<span style='vertical-align:middle;'>CarbonSeer</span></div>"
+    else:
+        brand_html = "<div class='footer-brand'>CarbonSeer</div>"
+
+    footer_html = f"""
     <div class='sticky-footer'>
         <div class='footer-content' style='align-items: center; display: flex; justify-content: space-between; flex-wrap: wrap;'>
-            <div class='footer-brand'>
-                🌍 CarbonSeer
-            </div>
+            {brand_html}
             
             <div class='footer-copyright'>
                 © 2025 <b>CarbonSeer</b>
@@ -1521,12 +1508,10 @@ def render_sticky_footer():
                 Kartavya Jharwal
             </a>
             </div>
-            
-            
         </div>
     </div>
     """
-    
+
     st.html(footer_html)
 
 
@@ -1534,28 +1519,33 @@ def render_sidebar_resources():
     """Render sidebar with PDF viewer and notebook download links."""
     import streamlit as st
     from pathlib import Path
+    import uuid
     
+    # Generate truly unique keys with UUID for each button
+    pdf_key = f"pdf_btn_{uuid.uuid4()}"
+    notebook_key = f"nb_btn_{uuid.uuid4()}"
+
     st.sidebar.markdown("---")
     st.sidebar.markdown("### 📚 Resources")
-    
+
     # Check if PDF exists
     pdf_path = Path(__file__).parent.parent / "assignment_report.pdf"
     notebook_path = Path(__file__).parent.parent / "assignment.ipynb"
-    
+
     if pdf_path.exists():
         st.sidebar.markdown("#### 📄 Analysis Report")
-        
+
         # PDF viewer using streamlit-extras
         try:
             from streamlit_extras.pdf_viewer import pdf_viewer
-            
+
             with st.sidebar.expander("📖 View Report", expanded=False):
                 with open(pdf_path, "rb") as f:
                     pdf_bytes = f.read()
                 pdf_viewer(pdf_bytes, height=400)
         except ImportError:
             st.sidebar.info("Install `streamlit-extras` to view PDF inline")
-        
+
         # Download link
         with open(pdf_path, "rb") as f:
             st.sidebar.download_button(
@@ -1563,12 +1553,13 @@ def render_sidebar_resources():
                 data=f.read(),
                 file_name="CarbonSeer_Analysis_Report.pdf",
                 mime="application/pdf",
-                width='stretch'
+                width="stretch",
+                key=pdf_key
             )
-    
+
     if notebook_path.exists():
         st.sidebar.markdown("#### 📓 Jupyter Notebook")
-        
+
         # Download link for notebook
         with open(notebook_path, "rb") as f:
             st.sidebar.download_button(
@@ -1576,15 +1567,16 @@ def render_sidebar_resources():
                 data=f.read(),
                 file_name="CarbonSeer_Analysis.ipynb",
                 mime="application/x-ipynb+json",
-                width='stretch'
+                width="stretch",
+                key=notebook_key
             )
-        
+
         # Optional: Link to nbviewer
         st.sidebar.markdown(
             "[🔗 View on GitHub](https://github.com/Kartavya-Jharwal/Kartavya_Business_Analytics2025/blob/main/A1/assignment.ipynb)",
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
-    
+
     st.sidebar.markdown("---")
     st.sidebar.markdown("### 🎓 Academic Context")
     st.sidebar.markdown("""

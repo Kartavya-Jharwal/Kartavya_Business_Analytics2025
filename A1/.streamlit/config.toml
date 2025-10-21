@@ -1,15 +1,18 @@
 [theme]
-# Inspired by carbon footprint tracker design - soft, elegant, earthy tones
-primaryColor = "#8B7D9B"  # Muted purple from moodboard
-backgroundColor = "#F5F3F0"  # Soft beige background
-secondaryBackgroundColor = "#FFFFFF"  # Clean white cards
+# CarbonSeer - Modern professional color palette
+primaryColor = "#FBA834"  # Vibrant orange
+backgroundColor = "#F1F0E9"  # Warm fallback background
+secondaryBackgroundColor = "#D4EBF8"  # Light blue
 textColor = "#2C2C2C"  # Dark charcoal text
 font = "sans serif"
 
 [server]
 headless = true
 port = 8501
-enableCORS = false
+# address = "0.0.0.0"
+# enableCORS = false
+# enableXsrfProtection = false
+enableCORS = true
 enableXsrfProtection = true
 
 [browser]

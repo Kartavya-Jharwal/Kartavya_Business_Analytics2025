@@ -7,61 +7,6 @@ resolution-markers = [
 ]
 
 [[package]]
-name = "a1"
-version = "0.1.0"
-source = { editable = "." }
-dependencies = [
-    { name = "jupyter" },
-    { name = "matplotlib" },
-    { name = "nbconvert" },
-    { name = "nbformat" },
-    { name = "notebook" },
-    { name = "numpy" },
-    { name = "pandas" },
-    { name = "pillow" },
-    { name = "plotly" },
-    { name = "pypandoc" },
-    { name = "rio-ui" },
-    { name = "scipy" },
-    { name = "seaborn" },
-    { name = "streamlit" },
-    { name = "streamlit-extras" },
-    { name = "streamlit-lottie" },
-]
-
-[package.optional-dependencies]
-dev = [
-    { name = "ipykernel" },
-    { name = "ipython" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=6.29.0" },
-    { name = "ipython", marker = "extra == 'dev'", specifier = ">=8.20.0" },
-    { name = "jupyter", specifier = ">=1.0.0" },
-    { name = "matplotlib", specifier = ">=3.8.0" },
-    { name = "nbconvert", specifier = ">=7.16.0" },
-    { name = "nbformat", specifier = ">=5.9.0" },
-    { name = "notebook", specifier = ">=7.0.0" },
-    { name = "numpy", specifier = ">=1.26.0" },
-    { name = "pandas", specifier = ">=2.2.0" },
-    { name = "pillow", specifier = ">=10.0.0" },
-    { name = "plotly", specifier = ">=5.18.0" },
-    { name = "pypandoc", specifier = ">=1.13" },
-    { name = "rio-ui", specifier = ">=0.11.1" },
-    { name = "scipy", specifier = ">=1.11.0" },
-    { name = "seaborn", specifier = ">=0.13.0" },
-    { name = "streamlit", specifier = ">=1.50.0" },
-    { name = "streamlit-extras", specifier = ">=0.4.0" },
-    { name = "streamlit-lottie", specifier = ">=0.0.5" },
-]
-provides-extras = ["dev"]
-
-[package.metadata.requires-dev]
-dev = []
-
-[[package]]
 name = "altair"
 version = "5.5.0"
 source = { registry = "https://pypi.org/simple" }
@@ -348,6 +293,86 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/9d/61/e4fad8155db4a04bfb4734c7c8ff0882f078f24294d42798b3568eb63bff/cachetools-6.2.0.tar.gz", hash = "sha256:38b328c0889450f05f5e120f56ab68c8abaf424e1275522b138ffc93253f7e32", size = 30988, upload-time = "2025-08-25T18:57:30.924Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/6c/56/3124f61d37a7a4e7cc96afc5492c78ba0cb551151e530b54669ddd1436ef/cachetools-6.2.0-py3-none-any.whl", hash = "sha256:1c76a8960c0041fcc21097e357f882197c79da0dbff766e7317890a65d7d8ba6", size = 11276, upload-time = "2025-08-25T18:57:29.684Z" },
+]
+
+[[package]]
+name = "carbonseer"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+    { name = "jupyter" },
+    { name = "matplotlib" },
+    { name = "nbconvert" },
+    { name = "nbformat" },
+    { name = "notebook" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "pillow" },
+    { name = "plotly" },
+    { name = "pypandoc" },
+    { name = "rio-ui" },
+    { name = "scipy" },
+    { name = "seaborn" },
+    { name = "streamlit" },
+    { name = "streamlit-extras" },
+    { name = "streamlit-lottie" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "ipykernel" },
+    { name = "ipython" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "pillow" },
+    { name = "plotly" },
+    { name = "scipy" },
+    { name = "seaborn" },
+    { name = "streamlit" },
+    { name = "streamlit-extras" },
+    { name = "streamlit-lottie" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=6.29.0" },
+    { name = "ipython", marker = "extra == 'dev'", specifier = ">=8.20.0" },
+    { name = "jupyter", specifier = ">=1.0.0" },
+    { name = "matplotlib", specifier = ">=3.8.0" },
+    { name = "nbconvert", specifier = ">=7.16.0" },
+    { name = "nbformat", specifier = ">=5.9.0" },
+    { name = "notebook", specifier = ">=7.0.0" },
+    { name = "numpy", specifier = ">=1.26.0" },
+    { name = "pandas", specifier = ">=2.2.0" },
+    { name = "pillow", specifier = ">=10.0.0" },
+    { name = "plotly", specifier = ">=5.18.0" },
+    { name = "pypandoc", specifier = ">=1.13" },
+    { name = "rio-ui", specifier = ">=0.11.1" },
+    { name = "scipy", specifier = ">=1.11.0" },
+    { name = "seaborn", specifier = ">=0.13.0" },
+    { name = "streamlit", specifier = ">=1.50.0" },
+    { name = "streamlit-extras", specifier = ">=0.4.0" },
+    { name = "streamlit-lottie", specifier = ">=0.0.5" },
+]
+provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "pillow" },
+    { name = "plotly" },
+    { name = "scipy" },
+    { name = "seaborn" },
+    { name = "streamlit" },
+    { name = "streamlit-extras" },
+    { name = "streamlit-lottie" },
 ]
 
 [[package]]

@@ -10,7 +10,16 @@ from .data_loader import (
     format_large_number,
 )
 
-from .styling import get_custom_css, get_plotly_theme, create_metric_card_html
+from .styling import (
+    get_custom_css,
+    get_plotly_theme,
+    create_metric_card_html,
+    render_navbar,
+    render_page_header,
+    render_breadcrumbs,
+    render_sticky_footer,
+    render_sidebar_resources,
+)
 
 __all__ = [
     "load_gdp_data",
@@ -24,4 +33,9 @@ __all__ = [
     "get_custom_css",
     "get_plotly_theme",
     "create_metric_card_html",
+    "render_navbar",
+    "render_page_header",
+    "render_breadcrumbs",
+    "render_sticky_footer",
+    "render_sidebar_resources",
 ]
