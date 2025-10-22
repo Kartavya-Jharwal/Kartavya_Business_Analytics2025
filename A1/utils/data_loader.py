@@ -228,8 +228,6 @@ def create_gdp_categories(
         bins=[-float("inf"), low_threshold, high_threshold, float("inf")],
         labels=["Low", "Medium", "High"],
     )
-    # Assignment brief expects 'GDP_Label' instead of 'GDP_Category'
-    df["GDP_Label"] = df["GDP_Category"]
 
     return df
 
