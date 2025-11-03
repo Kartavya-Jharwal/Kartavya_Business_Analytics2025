@@ -1,12 +1,9 @@
 """
-CarbonSeer - Award-Winning Carbon Risk Analytics Microsite
+CarbonSeer - Quantitative Carbon Risk Analytics Platform
 
-A dual-purpose interdisciplinary project combining:
-- Business Analytics (BAN-0200, Prof Glen Joseph): Statistical hypothesis testing on GDP, CO₂, and net-zero commitments
-- Creativity in Advertising & Marketing (DSN-0303, Prof Lindsay Butcher): Brand design for Redshaw Advisors carbon consulting
-
-CarbonSeer serves as a demo microsite showcasing quantitative carbon risk analysis for business decision-making.
-Design Goal: Awwwards-quality web experience combining rigorous analytics with exceptional UI/UX.
+Award-winning micro-tool for carbon consultants and quantitative analysts.
+Provides rigorous statistical analysis of GDP, CO₂ emissions, and net-zero commitments
+for investment screening, supply chain risk assessment, and CBAM compliance strategy.
 """
 
 import streamlit as st
@@ -24,32 +21,35 @@ from utils import (
 )
 from utils.styling import (
     render_global_branding,
-    render_page_lockup,
     render_sticky_footer,
-)
-
-# ===== PAGE CONFIGURATION (MUST BE FIRST STREAMLIT COMMAND) =====
-st.set_page_config(
-    page_title="CarbonSeer | Carbon Risk Analytics",
-    page_icon="🌍",
-    layout="wide",
-    initial_sidebar_state="collapsed",
 )
 
 # ===== PATHS AND CSS =====
 assets_dir = Path(__file__).parent / "assets"
 logo_path = assets_dir / "CarbonSeer_png.png"
 lockup_path = assets_dir / "CarbonSeer.png"
-st.markdown(get_custom_css(), unsafe_allow_html=True)
+
+# Global UI toggles (persist in session)
+if "fast_mode" not in st.session_state:
+    st.session_state.fast_mode = True  # default to fast interactions
+
+# Sidebar toggle
+with st.sidebar:
+    st.markdown("### ⚙️ Preferences")
+    st.toggle("⚡ Fast Mode", value=st.session_state.fast_mode, key="fast_toggle_home",
+             help="Use sampling and defer heavy visuals for instant feedback.",
+             on_change=lambda: setattr(st.session_state, 'fast_mode', st.session_state.fast_toggle_home))
+
+st.markdown(get_custom_css("light"), unsafe_allow_html=True)
 
 
 # ===== DATA LOADING FUNCTION =====
 @st.cache_data
-def load_all_data():
+def load_all_data(source: str = "auto"):
     """Load and prepare all datasets with caching for optimal performance."""
-    gdp_df = load_gdp_data()
-    co2_df = load_co2_data()
-    netzero_df = load_netzero_data()
+    gdp_df = load_gdp_data(source)
+    co2_df = load_co2_data(source)
+    netzero_df = load_netzero_data(source)
     merged_df = merge_gdp_co2(gdp_df, co2_df)
     merged_df = create_gdp_categories(merged_df)
     netzero_df = create_commitment_strength(netzero_df)
@@ -65,7 +65,17 @@ if not st.session_state.data_loaded:
     show_splash_overlay(logo_path=logo_path)
 
 # Load data. The splash screen is visible during this time.
-gdp_df, co2_df, netzero_df, merged_df = load_all_data()
+# Data source selection
+with st.sidebar:
+    st.markdown("### 🗄️ Data Source")
+    data_source_label = st.selectbox(
+        "Load data from:", ["Auto (Local→GitHub)", "GitHub (raw)", "Local files"], index=0
+    )
+source_map = {"Auto (Local→GitHub)": "auto", "GitHub (raw)": "github", "Local files": "local"}
+data_source = source_map[data_source_label]
+st.session_state.data_source = data_source  # Persist for other pages
+
+gdp_df, co2_df, netzero_df, merged_df = load_all_data(data_source)
 
 # Once data is loaded, mark as complete and trigger splash removal
 if not st.session_state.data_loaded:
@@ -115,26 +125,57 @@ with col2:
     <div class='hero-section' style='margin-top: 2rem;'></div>
     <div style='position: relative; z-index: 2;'></div>
     """)
-
-# Hero text
+# Hero text + punchy copy + CTA
 st.html("""
-    <div class='hero-subtitle' style='animation-delay: 0.4s;'>
-        Transforming Carbon Risk into Strategic Intelligence
+    <div class='hero-subtitle' style='animation-delay: 0.2s;'>
+        See the carbon future. Now.
     </div>
-    <div style='margin-top: 2rem; animation: fadeInUp 0.8s ease-out 0.6s backwards;'>
-        <p style='font-size: 1.1rem; opacity: 0.9; max-width: 700px; margin: 0 auto; line-height: 1.8;'>
-            See what others overlook.
-The carbon economy isn't coming—it's here. While regulations tighten and markets shift, the question isn't whether to adapt, but how quickly you can see the patterns emerging in the data.
-Every emission tells a story. Every regulation creates an edge. We turn complexity into clarity.
-Data-driven foresight for the carbon era.
+    <div style='margin-top: 1.5rem; animation: fadeInUp 0.8s ease-out 0.4s backwards;'>
+        <p style='font-size: 1.15rem; opacity: 0.95; max-width: 760px; margin: 0 auto; line-height: 1.9;'>
+            CarbonSeer is built to <strong>show, not tell</strong>—turning GDP, CO₂ and commitments into instant, defensible signals.
+            A bold tool for sustainability heads and quants who need decisions in seconds, not slides in weeks.
         </p>
     </div>
-</div>
-<div class='scroll-indicator' onclick='window.scrollTo({top: 800, behavior: "smooth"})'>
-    ↓
-</div>
-</div>
+    <div style='display:flex; gap: 1rem; justify-content:center; margin-top: 2rem; animation: fadeInUp 0.7s ease-out 0.6s backwards;'>
+        <span class='stButton'>
+            <button id='cta-analyze' style='font-size: 1rem;'>⚡ Run Fast Analysis</button>
+        </span>
+        <span class='stButton'>
+            <button id='cta-explore' style='background:linear-gradient(135deg, rgba(139,125,155,0.2), rgba(107,155,145,0.2)); color: inherit; border:2px solid rgba(139,125,155,0.35)'>🔍 Open Data Explorer</button>
+        </span>
+    </div>
+    <script>
+      // Lightweight navigation hooks
+      const go = (target) => {{
+        const streamlitEvents = window.parent || window;
+        // Fallback: trigger Streamlit navigation command via hash anchors if available
+      }}
+      document.getElementById('cta-analyze')?.addEventListener('click', () => {{
+        window.parent.postMessage({{ type: 'streamlit_navigate', page: 'pages/Analysis.py' }}, '*');
+      }});
+      document.getElementById('cta-explore')?.addEventListener('click', () => {{
+        window.parent.postMessage({{ type: 'streamlit_navigate', page: 'pages/Data_Explorer.py' }}, '*');
+      }});
+    </script>
+    <div class='scroll-indicator' onclick='window.scrollTo({{top: 800, behavior: "smooth"}})'>
+        ↓
+    </div>
 """)
+
+# Native CTA buttons for reliable navigation
+c1, c2, _ = st.columns([1,1,2])
+with c1:
+    if st.button("⚡ Run Fast Analysis", use_container_width=True):
+        try:
+            st.switch_page("pages/Analysis.py")
+        except Exception:
+            st.toast("Open the Analysis page from the sidebar", icon="📊")
+with c2:
+    if st.button("🔍 Open Data Explorer", use_container_width=True):
+        try:
+            st.switch_page("pages/Data_Explorer.py")
+        except Exception:
+            st.toast("Open the Data Explorer from the sidebar", icon="🔍")
 
 
 # ===== ACADEMIC CONTEXT - REDESIGNED =====
@@ -153,9 +194,9 @@ st.html("""
                    font-weight: 700;
                    color: #8B7D9B;
                    margin-bottom: 0.5rem;'>
-            Interdisciplinary Excellence
+            Professional Carbon Analytics
         </h2>
-        <p style='color: #666; font-size: 1rem;'>Where Analytics Meets Creative Design</p>
+        <p style='color: #666; font-size: 1rem;'>Built by Quantitative Analysts, For Quantitative Analysts</p>
     </div>
     
     <div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem;'>
@@ -163,35 +204,35 @@ st.html("""
             <div style='display: flex; align-items: center; margin-bottom: 1rem;'>
                 <span style='font-size: 2.5rem; margin-right: 1rem;'>📊</span>
                 <div>
-                    <h3 style='margin: 0; font-weight: 700; color: #2C2C2C;'>Business Analytics</h3>
-                    <p style='margin: 0; color: #666; font-size: 0.9rem;'>BAN-0200 | Prof Glen Joseph</p>
+                    <h3 style='margin: 0; font-weight: 700; color: #2C2C2C;'>Statistical Rigor</h3>
+                    <p style='margin: 0; color: #666; font-size: 0.9rem;'>Hypothesis Testing & Effect Sizes</p>
                 </div>
             </div>
             <p style='color: #4A4A4A; line-height: 1.6;'>
-                Statistical hypothesis testing, correlation analysis, and ANOVA on GDP, CO₂ emissions,
-                and net-zero commitments with comprehensive effect size reporting.
+                Pearson & Spearman correlations, ANOVA with pairwise comparisons, chi-square tests,
+                R² quantification, Cohen's d, and Cramér's V for robust statistical inference.
             </p>
         </div>
         
         <div class='insight-card' style='margin: 0;'>
             <div style='display: flex; align-items: center; margin-bottom: 1rem;'>
-                <span style='font-size: 2.5rem; margin-right: 1rem;'>🎨</span>
+                <span style='font-size: 2.5rem; margin-right: 1rem;'>💼</span>
                 <div>
-                    <h3 style='margin: 0; font-weight: 700; color: #2C2C2C;'>Creative Design</h3>
-                    <p style='margin: 0; color: #666; font-size: 0.9rem;'>DSN-0303 | Prof Lindsay Butcher</p>
+                    <h3 style='margin: 0; font-weight: 700; color: #2C2C2C;'>Investment Screening</h3>
+                    <p style='margin: 0; color: #666; font-size: 0.9rem;'>Country-Level Risk Assessment</p>
                 </div>
             </div>
             <p style='color: #4A4A4A; line-height: 1.6;'>
-                Brand design for Redshaw Advisors carbon consulting with focus on visual identity,
-                UI/UX design, and data storytelling through award-winning microsite architecture.
+                Evaluate 195 countries by carbon commitment strength, emissions trajectories,
+                and CBAM compliance status for data-driven capital allocation decisions.
             </p>
         </div>
     </div>
     
     <div style='margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(0, 0, 0, 0.05); text-align: center;'>
         <p style='margin: 0; color: #666;'>
-            <strong style='color: #8B7D9B;'>Prepared by:</strong> Kartavya Jharwal |
-            <strong style='color: #8B7D9B;'>Project Type:</strong> Interdisciplinary Showcase
+            <strong style='color: #8B7D9B;'>Developed by:</strong> Kartavya Jharwal |
+            <strong style='color: #8B7D9B;'>Purpose:</strong> Professional Carbon Risk Analytics Tool
         </p>
     </div>
 </div>
@@ -212,11 +253,11 @@ col1, col2, col3 = st.columns(3)
 with col1:
     st.html("""
 <div class='metric-card' style='animation: fadeInUp 0.6s ease-out 0.2s backwards;'>
-    <div class='metric-label'>ANALYTICAL FOUNDATION</div>
+    <div class='metric-label'>QUANTITATIVE FOUNDATION</div>
     <div style='margin: 1.5rem 0; font-size: 3rem; text-align: center;'>📈</div>
     <p style='color: #4A4A4A; line-height: 1.7; font-size: 0.95rem;'>
-        Quantitative analysis exploring relationships between GDP per capita, 
-        CO₂ emissions, and net-zero commitments using rigorous statistical methods.
+        Rigorous statistical analysis of GDP per capita, CO₂ emissions, and net-zero commitments
+        using hypothesis testing, correlation analysis, and ANOVA.
     </p>
     <div style='margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(0,0,0,0.05);'>
         <span style='font-weight: 600; color: #8B7D9B; font-size: 0.85rem;'>
@@ -229,15 +270,15 @@ with col1:
 with col2:
     st.html("""
 <div class='metric-card' style='animation: fadeInUp 0.6s ease-out 0.4s backwards;'>
-    <div class='metric-label'>BUSINESS INTELLIGENCE</div>
+    <div class='metric-label'>INVESTMENT INTELLIGENCE</div>
     <div style='margin: 1.5rem 0; font-size: 3rem; text-align: center;'>💼</div>
     <p style='color: #4A4A4A; line-height: 1.7; font-size: 0.95rem;'>
-        Strategic insights for navigating EU carbon regulations including CBAM 2026 
-        and ETS2 2027, with supply chain risk assessment capabilities.
+        Country-level screening for investment decisions, supply chain risk assessment,
+        and CBAM compliance strategy with commitment strength scoring (0-5 scale).
     </p>
     <div style='margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(0,0,0,0.05);'>
         <span style='font-weight: 600; color: #8B7D9B; font-size: 0.85rem;'>
-            Regulatory Compliance • Risk Analysis
+            CBAM 2026 • ETS2 2027 Ready
         </span>
     </div>
 </div>
@@ -246,15 +287,15 @@ with col2:
 with col3:
     st.html("""
 <div class='metric-card' style='animation: fadeInUp 0.6s ease-out 0.6s backwards;'>
-    <div class='metric-label'>DESIGN PHILOSOPHY</div>
+    <div class='metric-label'>INTERACTIVE PLATFORM</div>
     <div style='margin: 1.5rem 0; font-size: 3rem; text-align: center;'>✨</div>
     <p style='color: #4A4A4A; line-height: 1.7; font-size: 0.95rem;'>
-        Bridges quantitative rigor with accessible brand storytelling, demonstrating 
-        how carbon consulting transforms complex data into actionable intelligence.
+        Real-time data explorer with custom filtering, visualization builder, and CSV export
+        for client presentations and investment committee reports.
     </p>
     <div style='margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(0,0,0,0.05);'>
         <span style='font-weight: 600; color: #8B7D9B; font-size: 0.85rem;'>
-            Award-Winning UI • Data Storytelling
+            Interactive Dashboards • Data Export
         </span>
     </div>
 </div>
@@ -521,18 +562,18 @@ st.html("""
         CarbonSeer
     </div>
     <p style='font-size: 0.95rem; line-height: 1.6; color: #666; margin-bottom: 1.5rem;'>
-        An interdisciplinary demonstration microsite combining data-driven quantitative analysis with sleek design.
-        Built to showcase how carbon consulting transforms complex data into strategic business intelligence.
+        Award-winning quantitative analytics platform for carbon risk assessment and investment screening.
+        Built for carbon consultants, portfolio managers, and ESG analysts requiring rigorous statistical validation.
     </p>
     <div style='display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-bottom: 1.5rem;'>
-        <span style='color: #8B7D9B; font-weight: 600;'>📊 Business Analytics</span>
-        <span style='color: #6B9B91; font-weight: 600;'>🎨 Creative Design</span>
-        <span style='color: #C9A9A6; font-weight: 600;'>💼 Strategic Intelligence</span>
+        <span style='color: #8B7D9B; font-weight: 600;'>📊 Statistical Rigor</span>
+        <span style='color: #6B9B91; font-weight: 600;'>💼 Investment Screening</span>
+        <span style='color: #C9A9A6; font-weight: 600;'>🎯 CBAM Intelligence</span>
     </div>
     <div style='padding-top: 1.5rem; border-top: 1px solid rgba(0, 0, 0, 0.1);'>
         <p style='font-size: 0.85rem; color: #999; margin: 0;'>
-            © 2025 CarbonSeer | Built at <strong style='color: #8B7D9B;'>Hult International Business School</strong><br>
-            BAN-0200 & DSN-0303 | Prepared by Kartavya Jharwal
+            © 2025 CarbonSeer | Developed by <strong style='color: #8B7D9B;'>Kartavya Jharwal</strong><br>
+            Professional Carbon Risk Analytics Tool
         </p>
     </div>
 </div>
@@ -541,8 +582,3 @@ st.html("""
 
 # ===== RENDER STICKY FOOTER =====
 render_sticky_footer()
-
-home_page = st.Page("Home.py", title="Home", icon="🏠")
-analysis_page = st.Page("pages/Analysis.py", title="Analysis")
-pg = st.navigation([home_page, analysis_page])
-pg.run()

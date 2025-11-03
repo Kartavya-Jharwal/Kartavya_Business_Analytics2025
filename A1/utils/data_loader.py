@@ -13,10 +13,47 @@ All functions use @st.cache_data for optimal performance.
 import pandas as pd
 import streamlit as st
 from pathlib import Path
+from typing import Optional
+
+
+RAW_BASE = "https://raw.githubusercontent.com/Kartavya-Jharwal/Kartavya_Business_Analytics2025/refs/heads/main/A1"
+
+
+def _read_csv_auto(
+    local_path: Path,
+    github_path: Optional[str] = None,
+    source: str = "auto",
+    **read_csv_kwargs,
+) -> pd.DataFrame:
+    """
+    Read a CSV from local path or GitHub raw with graceful fallback.
+
+    Args:
+        local_path: Path to local CSV
+        github_path: Raw GitHub URL (if None, constructed from RAW_BASE and relative)
+        source: "auto" (try local then GitHub), "local", or "github"
+        **read_csv_kwargs: forwarded to pandas.read_csv
+    """
+    # Defaults that improve type inference for large CSVs
+    read_csv_kwargs.setdefault("low_memory", False)
+
+    if source == "local":
+        return pd.read_csv(local_path, **read_csv_kwargs)
+    if source == "github":
+        if not github_path:
+            raise FileNotFoundError("github_path must be provided when source='github'")
+        return pd.read_csv(github_path, **read_csv_kwargs)
+
+    # auto: prefer local then fallback to GitHub
+    if local_path.exists():
+        return pd.read_csv(local_path, **read_csv_kwargs)
+    if github_path:
+        return pd.read_csv(github_path, **read_csv_kwargs)
+    raise FileNotFoundError(f"Data not found locally and no GitHub URL provided: {local_path}")
 
 
 @st.cache_data
-def load_gdp_data() -> pd.DataFrame:
+def load_gdp_data(source: str = "auto") -> pd.DataFrame:
     """
     Load GDP per capita dataset from World Bank source.
 
@@ -41,11 +78,9 @@ def load_gdp_data() -> pd.DataFrame:
         / "gdp-per-capita-worldbank-constant-usd"
         / "gdp-per-capita-worldbank-constant-usd.csv"
     )
+    github_url = f"{RAW_BASE}/gdp-per-capita-worldbank-constant-usd/gdp-per-capita-worldbank-constant-usd.csv"
 
-    if not data_path.exists():
-        raise FileNotFoundError(f"GDP data not found at {data_path}")
-
-    df = pd.read_csv(data_path)
+    df = _read_csv_auto(data_path, github_url, source)
 
     # Standardize column names
     df = df.rename(columns={"Entity": "Country"})
@@ -54,7 +89,7 @@ def load_gdp_data() -> pd.DataFrame:
 
 
 @st.cache_data
-def load_co2_data() -> pd.DataFrame:
+def load_co2_data(source: str = "auto") -> pd.DataFrame:
     """
     Load CO2 emissions per capita dataset from Global Carbon Budget.
 
@@ -78,11 +113,9 @@ def load_co2_data() -> pd.DataFrame:
         / "co-emissions-per-capita"
         / "co-emissions-per-capita.csv"
     )
+    github_url = f"{RAW_BASE}/co-emissions-per-capita/co-emissions-per-capita.csv"
 
-    if not data_path.exists():
-        raise FileNotFoundError(f"CO2 data not found at {data_path}")
-
-    df = pd.read_csv(data_path)
+    df = _read_csv_auto(data_path, github_url, source)
 
     # Standardize column names
     df = df.rename(columns={"Entity": "Country"})
@@ -91,7 +124,7 @@ def load_co2_data() -> pd.DataFrame:
 
 
 @st.cache_data
-def load_netzero_data() -> pd.DataFrame:
+def load_netzero_data(source: str = "auto") -> pd.DataFrame:
     """
     Load net-zero targets dataset from Net Zero Tracker.
 
@@ -119,11 +152,9 @@ def load_netzero_data() -> pd.DataFrame:
     data_path = (
         Path(__file__).parent.parent / "net-zero-targets" / "net-zero-targets.csv"
     )
+    github_url = f"{RAW_BASE}/net-zero-targets/net-zero-targets.csv"
 
-    if not data_path.exists():
-        raise FileNotFoundError(f"Net-zero data not found at {data_path}")
-
-    df = pd.read_csv(data_path)
+    df = _read_csv_auto(data_path, github_url, source)
 
     # Standardize column names
     df = df.rename(columns={"Entity": "Country"})

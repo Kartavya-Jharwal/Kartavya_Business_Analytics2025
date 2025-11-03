@@ -4,12 +4,15 @@ Combines quantitative rigor with exceptional visual design.
 """
 
 
-def get_custom_css():
+def get_custom_css(mode: str = "light"):
     """
     Return award-winning CSS for CarbonSeer microsite.
     Features: Glassmorphism, smooth animations, advanced typography, micro-interactions.
+
+    Args:
+        mode: "light" (default) or "seer" for a dark, neon, mystic Seer theme.
     """
-    return """
+    base_css = """
     <style>
     /* Import premium fonts */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -1132,6 +1135,96 @@ def get_custom_css():
     </style>
     """
 
+    # Optional Seer (dark) theme overrides – appended to base CSS when enabled
+    if str(mode).lower() == "seer":
+        seer_css = """
+        <style>
+        /* Seer Mode: mystic dark theme with neon accents */
+        :root {
+            --color-primary: #A78BFA;   /* soft violet */
+            --color-primary-light: #C4B5FD;
+            --color-primary-dark: #7C3AED; /* vivid violet */
+
+            --color-secondary: #34D399;       /* emerald */
+            --color-secondary-light: #6EE7B7;
+            --color-secondary-dark: #10B981;
+
+            --color-dark: #0B0B12;
+            --color-gray-900: #11121A;
+            --color-gray-700: #C9D1D9;
+            --color-gray-500: #9CA3AF;
+            --color-gray-300: #4B5563;
+            --color-gray-100: #1F2430;
+            --color-white: #F3F4F6;
+        }
+
+        /* Cosmic gradient background with subtle starfield */
+        .main {
+            background: radial-gradient(1200px 500px at 10% -10%, rgba(124, 58, 237, 0.25), transparent 60%),
+                        radial-gradient(1000px 600px at 110% 10%, rgba(16, 185, 129, 0.18), transparent 60%),
+                        linear-gradient(180deg, #0B0B12 0%, #0F1222 60%, #0B0B12 100%);
+        }
+
+        /* Starfield */
+        body::before {
+            content: "";
+            position: fixed; inset: 0; pointer-events: none; z-index: -1;
+            background-image: radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.12) 50%, transparent 50%),
+                              radial-gradient(1px 1px at 80% 70%, rgba(255,255,255,0.08) 50%, transparent 50%),
+                              radial-gradient(1.5px 1.5px at 50% 50%, rgba(255,255,255,0.10) 50%, transparent 50%);
+            background-repeat: no-repeat;
+        }
+
+        /* Elevate hero to neon aura */
+        .hero-section {
+            background: linear-gradient(135deg, rgba(124,58,237,0.85) 0%, rgba(52,211,153,0.75) 100%);
+            color: var(--color-white);
+        }
+
+        .hero-title, .hero-subtitle, .section-header, .page-header h1 {
+            color: var(--color-white);
+            text-shadow: 0 8px 24px rgba(0,0,0,0.35);
+        }
+
+        .metric-card, .chart-container, .info-box, .success-box, .warning-box, .stMetric {
+            background: rgba(17,18,26, 0.65);
+            border-color: rgba(167,139,250, 0.25);
+            box-shadow: 0 12px 40px rgba(124, 58, 237, 0.12);
+            color: var(--color-white);
+        }
+
+        .metric-label { color: #A3A3B2; }
+        .metric-value { -webkit-text-fill-color: initial; color: var(--color-white); }
+
+        .stButton > button {
+            background: linear-gradient(135deg, var(--color-primary-dark), var(--color-secondary));
+            box-shadow: 0 10px 24px rgba(124,58,237,0.35);
+        }
+
+        .stTabs [data-baseweb="tab"] { color: #A3A3B2; }
+        .stTabs [data-baseweb="tab"][aria-selected="true"] { color: var(--color-white); }
+        .dataframe thead tr th { background: linear-gradient(135deg, var(--color-primary-dark), var(--color-secondary)) !important; }
+        .dataframe tbody tr:hover { background-color: rgba(167,139,250,0.08); }
+        .dashboard-footer { color: #C7C9D1; border-top-color: rgba(167,139,250,0.2); }
+
+        .sticky-footer {
+            background: linear-gradient(180deg, rgba(17,18,26, 0.95) 0%, rgba(11,11,18, 0.95) 100%);
+            border-top: 2px solid rgba(167,139,250, 0.25);
+        }
+
+        [data-testid="stSidebar"] {
+            background: linear-gradient(180deg, rgba(17,18,26,0.98) 0%, rgba(15,18,34,0.96) 100%);
+            border-right: 2px solid rgba(167,139,250, 0.2);
+        }
+        [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] p {
+            color: var(--color-white) !important;
+        }
+        </style>
+        """
+        return base_css + seer_css
+
+    return base_css
+
 
 def get_plotly_theme():
     """
@@ -1399,7 +1492,7 @@ def render_navbar(current_page: str = "Home"):
     </div>
     """
 
-    st.markdown(navbar_html)
+    st.markdown(navbar_html, unsafe_allow_html=True)
 
 
 def render_page_header(
