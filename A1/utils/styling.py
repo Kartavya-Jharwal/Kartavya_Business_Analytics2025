@@ -1092,6 +1092,59 @@ def get_custom_css(mode: str = "light"):
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
+    /* ===== REDUCE BLANK SPACE ===== */
+    /* Reduce padding in main container */
+    .block-container {
+        padding-top: 2rem !important;
+        padding-bottom: 1rem !important;
+        padding-left: 3rem !important;
+        padding-right: 3rem !important;
+    }
+    
+    /* Reduce spacing around horizontal rules */
+    hr {
+        margin-top: 1rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    /* Reduce spacing around sections */
+    .stMarkdown {
+        margin-bottom: 0.5rem !important;
+    }
+    
+    /* Reduce spacing between elements */
+    .element-container {
+        margin-bottom: 0.5rem !important;
+    }
+    
+    /* Compact tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 0.5rem;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+    
+    /* Reduce dataframe spacing */
+    .stDataFrame {
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    /* Compact expanders */
+    .streamlit-expanderHeader {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+    
+    /* Reduce chart spacing */
+    .js-plotly-plot {
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
     /* ===== SCROLL PROGRESS INDICATOR ===== */
     .scroll-progress {
         position: fixed;
@@ -1300,6 +1353,7 @@ def sanitize_df_for_display(df):
     This function intentionally does not modify the original DataFrame.
     """
     import pandas as pd
+    import numpy as np
     import json
 
     df_copy = df.copy()
@@ -1308,9 +1362,10 @@ def sanitize_df_for_display(df):
         if pd.api.types.is_object_dtype(df_copy[col].dtype):
             series = df_copy[col]
 
-            # 1) Try numeric
-            with pd.option_context("mode.use_inf_as_na", True):
-                coerced_num = pd.to_numeric(series, errors="coerce")
+            # 1) Try numeric - convert inf to NaN explicitly
+            coerced_num = pd.to_numeric(series, errors="coerce")
+            # Replace inf values with NaN as recommended by pandas
+            coerced_num = coerced_num.replace([np.inf, -np.inf], np.nan)
             if (
                 coerced_num.notna().sum() > 0
                 and coerced_num.isna().sum() < series.notna().sum()
@@ -1319,8 +1374,8 @@ def sanitize_df_for_display(df):
                 df_copy[col] = coerced_num
                 continue
 
-            # 2) Try datetime - removed deprecated parameter
-            coerced_dt = pd.to_datetime(series, errors="coerce")
+            # 2) Try datetime
+            coerced_dt = pd.to_datetime(series, errors="coerce", format="mixed")
             if (
                 coerced_dt.notna().sum() > 0
                 and coerced_dt.isna().sum() < series.notna().sum()
@@ -1535,7 +1590,7 @@ def render_sidebar_resources():
 
     # Check if PDF exists
     pdf_path = Path(__file__).parent.parent / "assignment_report.pdf"
-    notebook_path = Path(__file__).parent.parent / "assignment.ipynb"
+    notebook_path = Path(__file__).parent.parent / "CarbonSeer_Analysis.ipynb"
 
     if pdf_path.exists():
         st.sidebar.markdown("#### 📄 Analysis Report")
@@ -1582,14 +1637,4 @@ def render_sidebar_resources():
             unsafe_allow_html=True,
         )
 
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("### 🎓 Academic Context")
-    st.sidebar.markdown("""
-    **BAN-0200** - Business Analytics  
-    *Prof. Glen Joseph*
-    
-    **DSN-0303** - Creativity in Advertising  
-    *Prof. Lindsay Butcher*
-    
-    **Institution:** Hult International Business School
-    """)
+   

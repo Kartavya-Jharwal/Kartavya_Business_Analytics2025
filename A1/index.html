@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CarbonSeer - Professional carbon risk analytics for CBAM compliance and supply chain strategy">
+    <title>CarbonSeer | See the Carbon Future</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --orange: #FBA834;
+            --orange-light: #FCC266;
+            --orange-dark: #E9762B;
+            --blue: #387ADF;
+            --blue-light: #50C4ED;
+            --blue-dark: #333A73;
+            --beige: #F1F0E9;
+            --teal: #6B9B91;
+            --purple: #8B7D9B;
+            --white: #FFFFFF;
+            --dark: #1A1A1A;
+            --gray-900: #2C2C2C;
+            --gray-700: #4A4A4A;
+            --gray-500: #666666;
+            --font-display: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--dark);
+            background: linear-gradient(135deg, var(--beige) 0%, #D4EBF8 50%, var(--beige) 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 15s ease infinite;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid rgba(139, 125, 155, 0.1);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--orange);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--gray-700);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--orange);
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, var(--orange) 0%, var(--orange-light) 100%);
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(251, 168, 52, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(251, 168, 52, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -10%;
+            right: -10%;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(circle, rgba(251, 168, 52, 0.15) 0%, transparent 70%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 1000px;
+            position: relative;
+            z-index: 2;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .hero-logo {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--orange), var(--blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            color: var(--gray-700);
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: var(--gray-700);
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            line-height: 1.8;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, var(--orange) 0%, var(--orange-light) 100%);
+            color: white;
+            padding: 1.25rem 3rem;
+            border-radius: 16px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            box-shadow: 0 8px 32px rgba(251, 168, 52, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(251, 168, 52, 0.4);
+        }
+
+        .secondary-btn {
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--orange);
+            padding: 1.25rem 3rem;
+            border-radius: 16px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            border: 2px solid rgba(251, 168, 52, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .secondary-btn:hover {
+            background: var(--orange);
+            color: white;
+            border-color: var(--orange);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 6rem;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--gray-900);
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--gray-700);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 2.5rem;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--orange), var(--blue));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+        }
+
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .feature-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--gray-900);
+        }
+
+        .feature-description {
+            color: var(--gray-700);
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: linear-gradient(135deg, rgba(251, 168, 52, 0.1), rgba(56, 122, 223, 0.1));
+            padding: 4rem 2rem;
+            border-radius: 32px;
+            margin: 4rem 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            text-align: center;
+        }
+
+        .stat-item {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--orange), var(--blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--gray-700);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 3rem;
+            border-radius: 24px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border-left: 6px solid var(--orange);
+        }
+
+        .use-case-title {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .use-case-icon {
+            font-size: 2rem;
+        }
+
+        .use-case-content {
+            color: var(--gray-700);
+            line-height: 1.8;
+        }
+
+        .use-case-highlight {
+            background: rgba(251, 168, 52, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1.5rem;
+            border-left: 4px solid var(--orange);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--orange), var(--orange-light));
+            padding: 5rem 2rem;
+            border-radius: 32px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            animation: float 15s ease-in-out infinite;
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-title {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-description {
+            font-size: 1.3rem;
+            margin-bottom: 2.5rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.95;
+        }
+
+        .cta-button-large {
+            background: white;
+            color: var(--orange);
+            padding: 1.5rem 4rem;
+            border-radius: 16px;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 1.3rem;
+            display: inline-block;
+            transition: all 0.3s;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-button-large:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 3rem 2rem;
+            border-top: 2px solid rgba(139, 125, 155, 0.1);
+            text-align: center;
+            margin-top: 6rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-logo {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--orange);
+            margin-bottom: 1rem;
+        }
+
+        .footer-description {
+            color: var(--gray-700);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links a {
+            color: var(--gray-700);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--orange);
+        }
+
+        .copyright {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 6rem 1rem 2rem;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+            }
+
+            .primary-btn, .secondary-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            animation: bounce 2s infinite;
+            cursor: pointer;
+            color: var(--gray-500);
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(107, 155, 145, 0.1), rgba(139, 125, 155, 0.1));
+            padding: 2rem;
+            border-radius: 16px;
+            border-left: 6px solid var(--teal);
+            margin: 2rem 0;
+        }
+
+        .highlight-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--gray-900);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">
+                🌍 CarbonSeer
+            </a>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#use-cases">Use Cases</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="http://localhost:8501" class="cta-button">Launch App</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-logo">🔮</div>
+            <h1>See the Carbon Future. Now.</h1>
+            <p class="hero-subtitle">Professional Carbon Risk Analytics for CBAM Compliance</p>
+            <p class="hero-description">
+                <strong>CarbonSeer</strong> isn't just analytics—it's carbon <em>clairvoyance</em>. 
+                Transform GDP trajectories, emissions data, and net-zero pledges into actionable intelligence 
+                for navigating the <strong>EU Carbon Border Adjustment Mechanism (CBAM 2026)</strong> and 
+                <strong>ETS2 (2027)</strong> regulatory landscape.
+            </p>
+            <div class="hero-cta">
+                <a href="http://localhost:8501" class="primary-btn">
+                    🚀 Launch CarbonSeer
+                </a>
+                <a href="#features" class="secondary-btn">
+                    📊 Explore Features
+                </a>
+            </div>
+        </div>
+        <div class="scroll-indicator" onclick="document.querySelector('#features').scrollIntoView({behavior: 'smooth'})">
+            ↓
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <div class="container">
+        <div class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">195</div>
+                    <div class="stat-label">Countries Analyzed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Years of Data</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">&lt;2s</div>
+                    <div class="stat-label">Load Time</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">2026</div>
+                    <div class="stat-label">CBAM Launch</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <section id="features" class="container section">
+        <div class="section-header">
+            <h2 class="section-title">Why CarbonSeer?</h2>
+            <p class="section-subtitle">
+                Professional-grade analytics that transform complexity into clarity for carbon consultants and ESG analysts.
+            </p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <span class="feature-icon">📊</span>
+                <h3 class="feature-title">Statistical Rigor</h3>
+                <p class="feature-description">
+                    Hypothesis testing with Pearson & Spearman correlations, ANOVA with effect sizes (R², Cohen's d), 
+                    and chi-square tests. 195 countries across 50+ years of data with peer-reviewed methods.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">💼</span>
+                <h3 class="feature-title">Investment Intelligence</h3>
+                <p class="feature-description">
+                    Country-level carbon risk screening using commitment strength scoring (0-5). 
+                    Distinguish empty pledges from legally binding targets. Identify CBAM tariff exposure instantly.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">⚡</span>
+                <h3 class="feature-title">Fast Mode</h3>
+                <p class="feature-description">
+                    Instant analysis with intelligent sampling for time-sensitive decisions. 
+                    Toggle between quick insights and full statistical depth—no more waiting for quarterly reports.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">📈</span>
+                <h3 class="feature-title">Interactive Explorer</h3>
+                <p class="feature-description">
+                    Custom visualization builder with 5 chart types. Filter by country, year, GDP category. 
+                    Export to CSV/Excel for client presentations. Correlation heatmaps and summary statistics.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">🎯</span>
+                <h3 class="feature-title">CBAM Compliance</h3>
+                <p class="feature-description">
+                    2026 CBAM timeline tracking with supplier risk matrices. Screen high-GDP countries without legal commitments. 
+                    Estimate carbon tariff exposure (10-100€/tonne) for your supply chain.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">🌍</span>
+                <h3 class="feature-title">Global Coverage</h3>
+                <p class="feature-description">
+                    World Bank GDP data, Global Carbon Budget emissions, Net Zero Tracker commitments. 
+                    Comprehensive intelligence on which nations are prepared and which face regulatory exposure.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases Section -->
+    <section id="use-cases" class="container section">
+        <div class="section-header">
+            <h2 class="section-title">Real-World Use Cases</h2>
+            <p class="section-subtitle">
+                How carbon consultants, ESG analysts, and supply chain managers use CarbonSeer daily.
+            </p>
+        </div>
+
+        <div class="use-case">
+            <h3 class="use-case-title">
+                <span class="use-case-icon">🏭</span>
+                CBAM Compliance Screening
+            </h3>
+            <div class="use-case-content">
+                <p>
+                    <strong>Scenario:</strong> Your manufacturing company imports steel from 15 countries. 
+                    Which suppliers face carbon tariffs in 2026?
+                </p>
+                <div class="use-case-highlight">
+                    <strong>🔮 CarbonSeer Solution:</strong>
+                    <ol style="margin-top: 1rem; padding-left: 1.5rem;">
+                        <li>Filter Data Explorer to high-GDP countries without legal commitments</li>
+                        <li>Cross-reference with your supplier list</li>
+                        <li>Export risk assessment for procurement team</li>
+                        <li><strong>Result:</strong> Identify 40% of suppliers facing 10-30% cost increases</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="use-case">
+            <h3 class="use-case-title">
+                <span class="use-case-icon">💰</span>
+                ESG Investment Screening
+            </h3>
+            <div class="use-case-content">
+                <p>
+                    <strong>Scenario:</strong> Evaluating a portfolio of emerging market bonds. 
+                    Which countries demonstrate climate leadership?
+                </p>
+                <div class="use-case-highlight">
+                    <strong>🔮 CarbonSeer Solution:</strong>
+                    <ol style="margin-top: 1rem; padding-left: 1.5rem;">
+                        <li>Analyze GDP-emissions correlation (r ≈ 0.67, R² = 0.45)</li>
+                        <li>Screen for "In Law" or "Achieved" commitments (strength 4-5)</li>
+                        <li>Identify countries decoupling GDP from emissions</li>
+                        <li><strong>Result:</strong> Build green bond watchlist with regulatory certainty</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="use-case">
+            <h3 class="use-case-title">
+                <span class="use-case-icon">⏱️</span>
+                5-Minute Client Briefings
+            </h3>
+            <div class="use-case-content">
+                <p>
+                    <strong>Scenario:</strong> Client asks "Should we expand operations to Country X?" 
+                    You have 5 minutes to brief them.
+                </p>
+                <div class="use-case-highlight">
+                    <strong>🔮 CarbonSeer Solution:</strong>
+                    <ol style="margin-top: 1rem; padding-left: 1.5rem;">
+                        <li>Check Country X's commitment strength (0-5 scale)</li>
+                        <li>Compare emissions per capita to GDP peers</li>
+                        <li>Generate custom scatter plot for presentation</li>
+                        <li><strong>Result:</strong> Statistical rigor in seconds, not slides in weeks</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Insights Section -->
+    <section class="container section">
+        <div class="section-header">
+            <h2 class="section-title">Key Research Findings</h2>
+            <p class="section-subtitle">
+                Data-driven insights that inform CBAM strategy and supply chain decisions.
+            </p>
+        </div>
+
+        <div class="highlight-box">
+            <div class="highlight-title">💡 Finding #1: GDP-Emissions Strong Link</div>
+            <p>
+                <strong>Statistical Result:</strong> Strong positive correlation (r ≈ 0.67, R² = 0.45) between GDP per capita and CO₂ emissions.<br>
+                <strong>Business Impact:</strong> High-GDP countries emit 4-5× more per capita. Under CBAM, this means significant tariff exposure unless matched with legal net-zero commitments.
+            </p>
+        </div>
+
+        <div class="highlight-box">
+            <div class="highlight-title">🎯 Finding #2: Policy Commitment Gap</div>
+            <p>
+                <strong>Statistical Result:</strong> Significant association (χ² = 286.4, p < 0.001) between GDP and legally binding targets.<br>
+                <strong>Business Impact:</strong> Only ~40% of high-GDP countries have legal commitments. 60% face potential CBAM tariffs—a $10-100/tonne cost depending on sector.
+            </p>
+        </div>
+
+        <div class="highlight-box">
+            <div class="highlight-title">⏰ Finding #3: 18-Month Runway</div>
+            <p>
+                <strong>Timeline:</strong> CBAM definitive phase launches 2026. ETS2 expands to buildings/transport in 2027.<br>
+                <strong>Business Impact:</strong> <strong>18 months</strong> to restructure supply chains before tariffs hit. Act now or face 10-30% cost increases on carbon-intensive imports.
+            </p>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="container">
+        <div class="cta-section">
+            <div class="cta-content">
+                <h2 class="cta-title">Ready to See the Carbon Future?</h2>
+                <p class="cta-description">
+                    Join carbon consultants, ESG analysts, and supply chain strategists who use CarbonSeer 
+                    for instant, defensible insights. No more waiting weeks for reports.
+                </p>
+                <a href="http://localhost:8501" class="cta-button-large">
+                    🚀 Launch CarbonSeer Now
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="container section">
+        <div class="section-header">
+            <h2 class="section-title">About CarbonSeer</h2>
+        </div>
+
+        <div class="feature-card" style="max-width: 900px; margin: 0 auto;">
+            <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 1.5rem;">
+                <strong>CarbonSeer</strong> was developed as a dual-purpose academic project combining 
+                <strong>quantitative business analytics</strong> (BAN-0200, Prof. Glen Joseph) with 
+                <strong>brand design and marketing</strong> (DSN-0303, Prof. Lindsay Butcher) at 
+                <strong>Hult International Business School</strong>.
+            </p>
+            <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 1.5rem;">
+                The platform demonstrates that <strong>data analysis projects need not be boring</strong>—combining 
+                statistical rigor with award-worthy design and compelling narrative. Built for professionals 
+                who need carbon intelligence <strong>now</strong>, not next quarter.
+            </p>
+            <div style="padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.1);">
+                <p style="color: var(--gray-700); margin: 0;">
+                    <strong>Developed by:</strong> Kartavya Jharwal<br>
+                    <strong>Technology:</strong> Python, Streamlit, Plotly, SciPy<br>
+                    <strong>Data Sources:</strong> World Bank, Global Carbon Budget, Net Zero Tracker
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">🌍 CarbonSeer</div>
+            <p class="footer-description">
+                Professional carbon risk analytics for CBAM compliance and supply chain strategy. 
+                See the carbon future, one dataset at a time.
+            </p>
+            <div class="footer-links">
+                <a href="http://localhost:8501">Launch App</a>
+                <a href="https://github.com/Kartavya-Jharwal/Kartavya_Business_Analytics2025">GitHub</a>
+                <a href="https://kartavya-jharwal.github.io">Portfolio</a>
+                <a href="#features">Features</a>
+                <a href="#use-cases">Use Cases</a>
+            </div>
+            <div class="copyright">
+                © 2025 CarbonSeer | Built with ❤️ by Kartavya Jharwal | 
+                Hult International Business School
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll-based animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card, .use-case, .stat-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

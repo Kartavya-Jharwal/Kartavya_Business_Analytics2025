@@ -66,11 +66,12 @@ if not st.session_state.data_loaded:
 
 # Load data. The splash screen is visible during this time.
 # Data source selection
-with st.sidebar:
-    st.markdown("### 🗄️ Data Source")
-    data_source_label = st.selectbox(
-        "Load data from:", ["Auto (Local→GitHub)", "GitHub (raw)", "Local files"], index=0
-    )
+data_source_label = st.sidebar.selectbox(
+    "Select Data Source",
+    options=["Auto (Local→GitHub)", "GitHub (raw)", "Local files"],
+    index=0,
+    help="Choose data source for loading datasets. 'Auto' tries local first, then GitHub.",
+)
 source_map = {"Auto (Local→GitHub)": "auto", "GitHub (raw)": "github", "Local files": "local"}
 data_source = source_map[data_source_label]
 st.session_state.data_source = data_source  # Persist for other pages
@@ -132,17 +133,15 @@ st.html("""
     </div>
     <div style='margin-top: 1.5rem; animation: fadeInUp 0.8s ease-out 0.4s backwards;'>
         <p style='font-size: 1.15rem; opacity: 0.95; max-width: 760px; margin: 0 auto; line-height: 1.9;'>
-            CarbonSeer is built to <strong>show, not tell</strong>—turning GDP, CO₂ and commitments into instant, defensible signals.
-            A bold tool for sustainability heads and quants who need decisions in seconds, not slides in weeks.
+            <strong>CarbonSeer</strong> isn't just analytics—it's carbon <em>clairvoyance</em>. 
+            We transform GDP trajectories, emissions data, and net-zero pledges into <strong>actionable intelligence</strong> 
+            for CBAM compliance, supply chain risk, and investment decisions. 
+            In a world where <strong>EU Carbon Border Adjustment (2026)</strong> and <strong>ETS2 (2027)</strong> will reshape global trade, 
+            you need to <strong>see beyond the present</strong>—see which nations are preparing, which are vulnerable, and where capital should flow.
         </p>
-    </div>
-    <div style='display:flex; gap: 1rem; justify-content:center; margin-top: 2rem; animation: fadeInUp 0.7s ease-out 0.6s backwards;'>
-        <span class='stButton'>
-            <button id='cta-analyze' style='font-size: 1rem;'>⚡ Run Fast Analysis</button>
-        </span>
-        <span class='stButton'>
-            <button id='cta-explore' style='background:linear-gradient(135deg, rgba(139,125,155,0.2), rgba(107,155,145,0.2)); color: inherit; border:2px solid rgba(139,125,155,0.35)'>🔍 Open Data Explorer</button>
-        </span>
+        <p style='font-size: 1rem; opacity: 0.9; max-width: 760px; margin: 1rem auto 0 auto; line-height: 1.8; color:#000000;'>
+            Built for carbon consultants, ESG analysts, and supply chain strategists who need <strong>decisions in seconds, not slides in weeks</strong>.
+        </p>
     </div>
     <script>
       // Lightweight navigation hooks
@@ -165,13 +164,13 @@ st.html("""
 # Native CTA buttons for reliable navigation
 c1, c2, _ = st.columns([1,1,2])
 with c1:
-    if st.button("⚡ Run Fast Analysis", use_container_width=True):
+    if st.button("⚡ Run Fast Analysis", width="stretch"):
         try:
             st.switch_page("pages/Analysis.py")
         except Exception:
             st.toast("Open the Analysis page from the sidebar", icon="📊")
 with c2:
-    if st.button("🔍 Open Data Explorer", use_container_width=True):
+    if st.button("🔍 Open Data Explorer", width="stretch"):
         try:
             st.switch_page("pages/Data_Explorer.py")
         except Exception:
@@ -196,7 +195,7 @@ st.html("""
                    margin-bottom: 0.5rem;'>
             Professional Carbon Analytics
         </h2>
-        <p style='color: #666; font-size: 1rem;'>Built by Quantitative Analysts, For Quantitative Analysts</p>
+        <p style='color: #000; font-size: 1rem;'>Built by Quantitative Analysts, For Quantitative Analysts</p>
     </div>
     
     <div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem;'>
@@ -256,12 +255,13 @@ with col1:
     <div class='metric-label'>QUANTITATIVE FOUNDATION</div>
     <div style='margin: 1.5rem 0; font-size: 3rem; text-align: center;'>📈</div>
     <p style='color: #4A4A4A; line-height: 1.7; font-size: 0.95rem;'>
-        Rigorous statistical analysis of GDP per capita, CO₂ emissions, and net-zero commitments
-        using hypothesis testing, correlation analysis, and ANOVA.
+        Rigorous statistical analysis of <strong>195 countries</strong> across <strong>50+ years</strong>, 
+        examining GDP per capita, CO₂ emissions, and net-zero commitments using hypothesis testing, 
+        correlation analysis (Pearson & Spearman), ANOVA, and effect size quantification (R², Cohen's d).
     </p>
     <div style='margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(0,0,0,0.05);'>
         <span style='font-weight: 600; color: #8B7D9B; font-size: 0.85rem;'>
-            195 Countries • 50+ Years Data
+            ✓ Peer-Reviewed Methods • Statistical Rigor
         </span>
     </div>
 </div>
@@ -273,12 +273,13 @@ with col2:
     <div class='metric-label'>INVESTMENT INTELLIGENCE</div>
     <div style='margin: 1.5rem 0; font-size: 3rem; text-align: center;'>💼</div>
     <p style='color: #4A4A4A; line-height: 1.7; font-size: 0.95rem;'>
-        Country-level screening for investment decisions, supply chain risk assessment,
-        and CBAM compliance strategy with commitment strength scoring (0-5 scale).
+        Country-level carbon risk screening using <strong>commitment strength scoring (0-5)</strong>—distinguishing 
+        between empty pledges and legally binding targets. Identifies which economies face CBAM tariffs, 
+        which supply chains need restructuring, and where <strong>green capital should flow</strong>.
     </p>
     <div style='margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(0,0,0,0.05);'>
         <span style='font-weight: 600; color: #8B7D9B; font-size: 0.85rem;'>
-            CBAM 2026 • ETS2 2027 Ready
+            ⚡ CBAM 2026 • ETS2 2027 Ready
         </span>
     </div>
 </div>
@@ -290,12 +291,13 @@ with col3:
     <div class='metric-label'>INTERACTIVE PLATFORM</div>
     <div style='margin: 1.5rem 0; font-size: 3rem; text-align: center;'>✨</div>
     <p style='color: #4A4A4A; line-height: 1.7; font-size: 0.95rem;'>
-        Real-time data explorer with custom filtering, visualization builder, and CSV export
-        for client presentations and investment committee reports.
+        Real-time data explorer with <strong>custom filtering</strong>, dynamic visualization builder, and CSV export 
+        for client presentations. Fast Mode enables <strong>instant analysis</strong> for time-sensitive decisions—no more 
+        waiting for quarterly reports. See patterns, export insights, brief stakeholders—<strong>all in minutes</strong>.
     </p>
     <div style='margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(0,0,0,0.05);'>
         <span style='font-weight: 600; color: #8B7D9B; font-size: 0.85rem;'>
-            Interactive Dashboards • Data Export
+            🚀 Fast Mode • Export-Ready • Client-Friendly
         </span>
     </div>
 </div>

@@ -26,6 +26,8 @@ dependencies = [
     "pypandoc>=1.13",
     "pillow>=10.0.0",
     "rio-ui>=0.11.1",
+    "statsmodels>=0.14.5",
+    "weasyprint>=66.0",
 ]
 
 [project.optional-dependencies]
