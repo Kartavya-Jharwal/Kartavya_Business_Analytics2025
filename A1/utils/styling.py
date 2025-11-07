@@ -1636,3 +1636,19 @@ def render_sidebar_resources():
             "[🔗 View on GitHub](https://github.com/Kartavya-Jharwal/Kartavya_Business_Analytics2025/blob/main/A1/assignment.ipynb)",
             unsafe_allow_html=True,
         )
+
+    # Add Get in Touch link
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 💬 Get in Touch")
+    st.sidebar.markdown(
+        """
+        <a href='https://kartavyajharwal.github.io' target='_blank' style='text-decoration: none;'>
+            <div style='padding: 0.75rem; background: linear-gradient(135deg, rgba(139, 125, 155, 0.15), rgba(107, 155, 145, 0.1)); 
+                        border: 2px solid rgba(139, 125, 155, 0.3); border-radius: 10px; text-align: center; 
+                        transition: all 0.3s; cursor: pointer;'>
+                <span style='font-size: 1rem; color: #6B4E71; font-weight: 600;'>🌐 Visit My Portfolio</span>
+            </div>
+        </a>
+        """,
+        unsafe_allow_html=True,
+    )

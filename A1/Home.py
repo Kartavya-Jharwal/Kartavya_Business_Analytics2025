@@ -27,7 +27,7 @@ from utils.styling import (
 # ===== PATHS AND CSS =====
 assets_dir = Path(__file__).parent / "assets"
 logo_path = assets_dir / "CarbonSeer_png.png"
-lockup_path = assets_dir / "CarbonSeer.png"
+lockup_path = assets_dir / "Carbonseer.png"
 
 # Global UI toggles (persist in session)
 if "fast_mode" not in st.session_state:

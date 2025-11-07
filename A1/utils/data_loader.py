@@ -55,7 +55,7 @@ def _read_csv_auto(
 
 
 @st.cache_data
-def load_gdp_data(source: str = "auto") -> pd.DataFrame:
+def load_gdp_data(source: str = "github") -> pd.DataFrame:
     """
     Load GDP per capita dataset from World Bank source.
 
@@ -91,7 +91,7 @@ def load_gdp_data(source: str = "auto") -> pd.DataFrame:
 
 
 @st.cache_data
-def load_co2_data(source: str = "auto") -> pd.DataFrame:
+def load_co2_data(source: str = "github") -> pd.DataFrame:
     """
     Load CO2 emissions per capita dataset from Global Carbon Budget.
 
@@ -126,7 +126,7 @@ def load_co2_data(source: str = "auto") -> pd.DataFrame:
 
 
 @st.cache_data
-def load_netzero_data(source: str = "auto") -> pd.DataFrame:
+def load_netzero_data(source: str = "github") -> pd.DataFrame:
     """
     Load net-zero targets dataset from Net Zero Tracker.
 
