@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Carbon Risk | CarbonSeer Context</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --beige: #f5f1e8;
+            --dark-purple: #2d1b4e;
+            --medium-purple: #4a2c6f;
+            --teal: #1a7f7f;
+            --light-teal: #2d9a9a;
+            --accent-orange: #e67e22;
+            --text-dark: #2c3e50;
+            --text-light: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--beige) 0%, #e8dcc8 100%);
+            color: var(--text-dark);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(45, 27, 78, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.2rem 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-light);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--light-teal);
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            padding: 4rem 5% 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--dark-purple);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero .subtitle {
+            font-size: 1.4rem;
+            color: var(--teal);
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+
+        /* Timeline Section */
+        .timeline-section {
+            padding: 3rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-purple);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .section-intro {
+            font-size: 1.2rem;
+            color: var(--text-dark);
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            line-height: 1.8;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--teal) 0%, var(--medium-purple) 100%);
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            width: 45%;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .timeline-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 30px;
+            background: var(--teal);
+            border: 5px solid var(--beige);
+            border-radius: 50%;
+            z-index: 10;
+        }
+
+        .timeline-date {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--teal);
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-purple);
+            margin-bottom: 1rem;
+        }
+
+        .timeline-description {
+            font-size: 1.05rem;
+            color: var(--text-dark);
+            line-height: 1.7;
+        }
+
+        .timeline-tag {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            background: var(--light-teal);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        /* Impact Cards */
+        .impact-section {
+            padding: 4rem 5%;
+            background: linear-gradient(135deg, rgba(45, 27, 78, 0.05) 0%, rgba(26, 127, 127, 0.05) 100%);
+        }
+
+        .impact-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .impact-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .impact-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .impact-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .impact-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--dark-purple);
+            margin-bottom: 1rem;
+        }
+
+        .impact-description {
+            font-size: 1.05rem;
+            color: var(--text-dark);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .impact-stat {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--teal);
+            margin-top: 1rem;
+        }
+
+        /* Key Concepts */
+        .concepts-section {
+            padding: 4rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, var(--dark-purple) 0%, var(--medium-purple) 100%);
+            color: var(--text-light);
+            padding: 3rem;
+            border-radius: 25px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(45, 27, 78, 0.3);
+        }
+
+        .concept-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--light-teal);
+        }
+
+        .concept-definition {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .concept-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .concept-detail-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        .concept-detail-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--light-teal);
+            margin-bottom: 0.5rem;
+        }
+
+        .concept-detail-text {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Business Implications */
+        .implications-section {
+            padding: 4rem 5%;
+            background: linear-gradient(135deg, rgba(230, 126, 34, 0.08) 0%, rgba(26, 127, 127, 0.08) 100%);
+        }
+
+        .implications-grid {
+            max-width: 1400px;
+            margin: 2rem auto 0;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .implication-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            border-left: 5px solid var(--accent-orange);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .implication-card.risk {
+            border-left-color: #e74c3c;
+        }
+
+        .implication-card.opportunity {
+            border-left-color: #27ae60;
+        }
+
+        .implication-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .implication-card.risk .implication-label {
+            color: #e74c3c;
+        }
+
+        .implication-card.opportunity .implication-label {
+            color: #27ae60;
+        }
+
+        .implication-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-purple);
+            margin-bottom: 1rem;
+        }
+
+        .implication-text {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: var(--text-dark);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 5rem 5%;
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--dark-purple);
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-description {
+            font-size: 1.3rem;
+            color: var(--text-dark);
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1.2rem 3rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--teal) 0%, var(--light-teal) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(26, 127, 127, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--dark-purple);
+            border: 2px solid var(--dark-purple);
+        }
+
+        .btn-secondary:hover {
+            background: var(--dark-purple);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-purple);
+            color: var(--text-light);
+            padding: 2rem 5%;
+            text-align: center;
+        }
+
+        footer p {
+            margin-bottom: 0.5rem;
+        }
+
+        footer a {
+            color: var(--light-teal);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero .subtitle {
+                font-size: 1.2rem;
+            }
+
+            .timeline::before {
+                left: 30px;
+            }
+
+            .timeline-item {
+                flex-direction: row !important;
+            }
+
+            .timeline-content {
+                width: calc(100% - 80px);
+                margin-left: 80px;
+            }
+
+            .timeline-marker {
+                left: 30px;
+            }
+
+            .implications-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .cta-title {
+                font-size: 2rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-content">
+            <a href="index.html" class="logo">CarbonSeer</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="context.html">Context</a></li>
+                <li><a href="http://localhost:8501" target="_blank">Launch App</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <h1>The Carbon Regulation Revolution</h1>
+        <p class="subtitle">Understanding the EU's transformative climate policies reshaping global trade</p>
+    </section>
+
+    <!-- Timeline -->
+    <section class="timeline-section">
+        <h2 class="section-title">Regulatory Timeline: What's Coming</h2>
+        <p class="section-intro">
+            The European Union is implementing the world's most ambitious carbon pricing system, 
+            fundamentally changing how businesses operate across borders. Here's what you need to know.
+        </p>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">2023-2025</div>
+                    <div class="timeline-title">CBAM Transition Phase</div>
+                    <div class="timeline-description">
+                        The Carbon Border Adjustment Mechanism (CBAM) begins with mandatory reporting for imports 
+                        of cement, iron, steel, aluminum, fertilizers, electricity, and hydrogen. Companies must 
+                        track embedded emissions in their supply chains without financial penalties—yet.
+                    </div>
+                    <span class="timeline-tag">Reporting Only</span>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">2026</div>
+                    <div class="timeline-title">CBAM Carbon Tariffs Begin</div>
+                    <div class="timeline-description">
+                        Financial consequences arrive. Importers must purchase CBAM certificates matching the 
+                        carbon price difference between EU and origin countries. Countries without legally binding 
+                        net-zero commitments face full tariffs—potentially 20-35% of import value for carbon-intensive goods.
+                    </div>
+                    <span class="timeline-tag">Financial Impact</span>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">2027</div>
+                    <div class="timeline-title">ETS2 Expansion</div>
+                    <div class="timeline-description">
+                        The EU Emissions Trading System extends to buildings and road transport (ETS2). Combined with 
+                        existing ETS1 (power and industry), this creates comprehensive carbon pricing across 
+                        virtually all economic sectors within the EU.
+                    </div>
+                    <span class="timeline-tag">Sectoral Expansion</span>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">2028-2030</div>
+                    <div class="timeline-title">Full Implementation & Enforcement</div>
+                    <div class="timeline-description">
+                        CBAM reaches full coverage. Free ETS allowances for EU industries phase out completely. 
+                        Carbon pricing becomes the dominant factor in import/export decisions. Supply chain 
+                        restructuring accelerates as companies seek low-carbon suppliers.
+                    </div>
+                    <span class="timeline-tag">System Maturity</span>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">2034</div>
+                    <div class="timeline-title">Net-Zero Commitment Deadline</div>
+                    <div class="timeline-description">
+                        Countries must have legally binding net-zero commitments in place to avoid maximum CBAM 
+                        tariffs. This creates urgent pressure for national climate legislation worldwide. 
+                        Non-compliant countries face structural trade disadvantages with the EU market.
+                    </div>
+                    <span class="timeline-tag">Global Compliance</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact Cards -->
+    <section class="impact-section">
+        <h2 class="section-title">Real-World Impact</h2>
+        <p class="section-intro">
+            These aren't abstract policy changes—they represent the largest restructuring of global trade 
+            relationships since the establishment of the WTO.
+        </p>
+
+        <div class="impact-grid">
+            <div class="impact-card">
+                <div class="impact-icon">🌍</div>
+                <div class="impact-title">Global Scope</div>
+                <div class="impact-description">
+                    The EU is the world's largest trading bloc, importing over €3.5 trillion annually. 
+                    CBAM affects every company exporting carbon-intensive goods to Europe—regardless of 
+                    their home country.
+                </div>
+                <div class="impact-stat">€3.5T+ Trade</div>
+            </div>
+
+            <div class="impact-card">
+                <div class="impact-icon">💰</div>
+                <div class="impact-title">Cost Exposure</div>
+                <div class="impact-description">
+                    Importers from countries without net-zero commitments could face carbon tariffs of 
+                    €75-90 per ton of CO₂ by 2026, rising to €120+ by 2030. For steel or cement, this 
+                    adds 25-35% to import costs.
+                </div>
+                <div class="impact-stat">20-35% Cost Increase</div>
+            </div>
+
+            <div class="impact-card">
+                <div class="impact-icon">🏭</div>
+                <div class="impact-title">Supply Chain Shift</div>
+                <div class="impact-description">
+                    Companies are already restructuring supply chains to favor suppliers in countries with 
+                    strong climate policies. This creates competitive advantages for low-carbon manufacturers 
+                    and disadvantages for high-emitters.
+                </div>
+                <div class="impact-stat">Structural Change</div>
+            </div>
+
+            <div class="impact-card">
+                <div class="impact-icon">⚖️</div>
+                <div class="impact-title">Legal Complexity</div>
+                <div class="impact-description">
+                    Countries must have net-zero targets "in law"—not just policy documents or pledges. 
+                    This distinction determines billions in trade advantages. Only ~30 countries currently 
+                    meet this threshold.
+                </div>
+                <div class="impact-stat">30 Countries Protected</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Concepts -->
+    <section class="concepts-section">
+        <h2 class="section-title">Key Concepts Explained</h2>
+
+        <div class="concept-box">
+            <div class="concept-title">Carbon Border Adjustment Mechanism (CBAM)</div>
+            <div class="concept-definition">
+                A carbon tariff system that equalizes the carbon price between EU-produced goods and imports, 
+                preventing "carbon leakage" where companies relocate to countries with weaker climate regulations. 
+                Think of it as a customs duty based on embedded emissions rather than product value.
+            </div>
+            <div class="concept-details">
+                <div class="concept-detail-item">
+                    <div class="concept-detail-title">How It Works</div>
+                    <div class="concept-detail-text">
+                        Importers must purchase CBAM certificates at a price matching the EU ETS carbon price. 
+                        Credits are deducted if the origin country has its own carbon pricing system.
+                    </div>
+                </div>
+                <div class="concept-detail-item">
+                    <div class="concept-detail-title">Covered Sectors</div>
+                    <div class="concept-detail-text">
+                        Initially: cement, iron & steel, aluminum, fertilizers, electricity, hydrogen. 
+                        Expected expansion: chemicals, polymers, refined petroleum products by 2030.
+                    </div>
+                </div>
+                <div class="concept-detail-item">
+                    <div class="concept-detail-title">Exemptions</div>
+                    <div class="concept-detail-text">
+                        Countries with equivalent carbon pricing or legally binding net-zero commitments 
+                        receive reduced tariffs or full exemptions based on regulatory equivalence.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="concept-box">
+            <div class="concept-title">EU Emissions Trading System (ETS & ETS2)</div>
+            <div class="concept-definition">
+                The world's largest cap-and-trade system, covering 10,000+ industrial installations. 
+                ETS1 (2005-present) covers power generation and heavy industry. ETS2 (2027+) extends to 
+                buildings and transport. Together they create economy-wide carbon pricing.
+            </div>
+            <div class="concept-details">
+                <div class="concept-detail-item">
+                    <div class="concept-detail-title">Current Price</div>
+                    <div class="concept-detail-text">
+                        EU ETS carbon allowances trade at €80-90/ton as of 2025. Forecasts suggest 
+                        €100-120/ton by 2030 as the cap tightens and free allocations phase out.
+                    </div>
+                </div>
+                <div class="concept-detail-item">
+                    <div class="concept-detail-title">Cap Reduction</div>
+                    <div class="concept-detail-text">
+                        The total emissions cap decreases by 4.2% annually from 2024-2027, then 4.4% 
+                        annually from 2028-2030, forcing continuous emissions reductions.
+                    </div>
+                </div>
+                <div class="concept-detail-item">
+                    <div class="concept-detail-title">Phase-Out</div>
+                    <div class="concept-detail-text">
+                        Free allowances for CBAM-covered sectors phase out from 2026-2034 as the 
+                        carbon border mechanism takes over the role of preventing carbon leakage.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="concept-box">
+            <div class="concept-title">Net-Zero Commitment Strength</div>
+            <div class="concept-definition">
+                Not all climate commitments are equal. The EU distinguishes between pledges, policy documents, 
+                and legal mandates. Only targets enshrined in national law provide regulatory certainty and 
+                qualify for CBAM exemptions. This creates a hierarchy of climate ambition with real trade consequences.
+            </div>
+            <div class="concept-details">
+                <div class="concept-detail-item">
+                    <div class="concept-detail-title">In Law (Highest)</div>
+                    <div class="concept-detail-text">
+                        Net-zero targets codified in primary or secondary legislation. Examples: UK Climate 
+                        Change Act, Sweden's Climate Act. Provides maximum CBAM protection.
+                    </div>
+                </div>
+                <div class="concept-detail-item">
+                    <div class="concept-detail-title">In Policy</div>
+                    <div class="concept-detail-text">
+                        Targets in government policy documents, national strategies, or NDCs. Easier to 
+                        change than laws. Partial CBAM recognition possible.
+                    </div>
+                </div>
+                <div class="concept-detail-item">
+                    <div class="concept-detail-title">Declaration/Pledge</div>
+                    <div class="concept-detail-text">
+                        Political statements, international pledges, or non-binding declarations. 
+                        No legal force. Minimal or no CBAM recognition—full tariffs apply.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Business Implications -->
+    <section class="implications-section">
+        <h2 class="section-title">Business Implications</h2>
+        <p class="section-intro">
+            These regulatory changes create both risks and opportunities. Understanding your position 
+            in this landscape is critical for strategic planning.
+        </p>
+
+        <div class="implications-grid">
+            <div class="implication-card risk">
+                <div class="implication-label">Risk: Tariff Exposure</div>
+                <div class="implication-title">Supply Chains from Non-Compliant Countries</div>
+                <div class="implication-text">
+                    Companies sourcing from China, India, Russia, or other countries without legally 
+                    binding net-zero commitments face immediate cost increases when CBAM tariffs begin in 
+                    2026. For carbon-intensive sectors, this could add 20-35% to import costs overnight.
+                </div>
+            </div>
+
+            <div class="implication-card opportunity">
+                <div class="implication-label">Opportunity: Compliance Advantage</div>
+                <div class="implication-title">First-Mover Decarbonization</div>
+                <div class="implication-text">
+                    Companies that decarbonize now gain competitive advantages: lower CBAM costs, 
+                    preferred supplier status, access to green finance, and brand differentiation. 
+                    Early movers capture market share from slower competitors.
+                </div>
+            </div>
+
+            <div class="implication-card risk">
+                <div class="implication-label">Risk: Reporting Burden</div>
+                <div class="implication-title">Complex Emissions Tracking Requirements</div>
+                <div class="implication-text">
+                    CBAM requires detailed emissions reporting for every import, including Scope 3 
+                    supply chain emissions. Many companies lack the systems, data, or expertise to 
+                    comply accurately. Non-compliance triggers penalties and default emission values.
+                </div>
+            </div>
+
+            <div class="implication-card opportunity">
+                <div class="implication-label">Opportunity: Strategic Sourcing</div>
+                <div class="implication-title">Geographic Supply Chain Optimization</div>
+                <div class="implication-text">
+                    Companies can restructure supply chains to favor suppliers in countries with strong 
+                    climate policies (UK, EU, Japan, Canada). This "nearshoring to low-carbon regions" 
+                    reduces both tariff exposure and emissions simultaneously.
+                </div>
+            </div>
+
+            <div class="implication-card risk">
+                <div class="implication-label">Risk: Stranded Assets</div>
+                <div class="implication-title">Carbon-Intensive Infrastructure Devaluation</div>
+                <div class="implication-text">
+                    Investments in high-carbon production facilities, especially in non-compliant countries, 
+                    face rapid devaluation as CBAM makes their outputs uncompetitive in EU markets. This 
+                    creates significant write-down risks for capital-intensive industries.
+                </div>
+            </div>
+
+            <div class="implication-card opportunity">
+                <div class="implication-label">Opportunity: Green Investment</div>
+                <div class="implication-title">Low-Carbon Technology Leadership</div>
+                <div class="implication-text">
+                    Companies investing in green steel, sustainable cement, hydrogen production, or carbon 
+                    capture will see sustained demand growth. EU buyers will pay premiums for low-carbon 
+                    products to reduce their own CBAM costs and meet ESG targets.
+                </div>
+            </div>
+
+            <div class="implication-card risk">
+                <div class="implication-label">Risk: Customer Requirements</div>
+                <div class="implication-title">Downstream Pressure from EU Buyers</div>
+                <div class="implication-text">
+                    Even if you don't export directly to the EU, your customers might. They will demand 
+                    emissions data and low-carbon products to meet their own CBAM obligations. This 
+                    cascades carbon requirements throughout global supply chains.
+                </div>
+            </div>
+
+            <div class="implication-card opportunity">
+                <div class="implication-label">Opportunity: Market Differentiation</div>
+                <div class="implication-title">Carbon as Competitive Advantage</div>
+                <div class="implication-text">
+                    Low-carbon credentials become a market differentiator. Companies with verified 
+                    emissions data, renewable energy use, and decarbonization roadmaps win contracts 
+                    over competitors. Carbon performance joins quality, cost, and delivery as a 
+                    key procurement criterion.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <h2 class="cta-title">Ready to Analyze Your Carbon Risk?</h2>
+        <p class="cta-description">
+            CarbonSeer provides quantitative analysis of GDP, emissions, and net-zero commitments 
+            across 200+ countries—helping you identify risks, opportunities, and strategic priorities 
+            in the new carbon economy.
+        </p>
+        <div class="cta-buttons">
+            <a href="http://localhost:8501" class="btn btn-primary" target="_blank">Launch Interactive Analysis</a>
+            <a href="index.html" class="btn btn-secondary">Learn More About CarbonSeer</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p><strong>CarbonSeer</strong> | Carbon Risk Analytics Platform</p>
+        <p>Academic Project by Kartavya Jharwal | <a href="https://github.com/Kartavya-Jharwal">GitHub</a></p>
+        <p>Built for Business Analytics (BAN-0200) & Creativity in Advertising & Marketing (DSN-0303)</p>
+        <p>Data: World Bank, Global Carbon Budget, Net Zero Tracker | © 2025</p>
+    </footer>
+</body>
+</html>
