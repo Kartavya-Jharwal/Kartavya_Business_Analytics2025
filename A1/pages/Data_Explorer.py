@@ -40,8 +40,14 @@ if "fast_mode" not in st.session_state:
     st.session_state.fast_mode = True
 with st.sidebar:
     st.markdown("### ⚙️ Preferences")
-    st.toggle("⚡ Fast Mode", value=st.session_state.fast_mode, key="fast_toggle_explorer",
-             on_change=lambda: setattr(st.session_state, 'fast_mode', st.session_state.fast_toggle_explorer))
+    st.toggle(
+        "⚡ Fast Mode",
+        value=st.session_state.fast_mode,
+        key="fast_toggle_explorer",
+        on_change=lambda: setattr(
+            st.session_state, "fast_mode", st.session_state.fast_toggle_explorer
+        ),
+    )
 
 st.markdown(get_custom_css("light"), unsafe_allow_html=True)
 
@@ -58,10 +64,11 @@ render_sidebar_resources()
 render_page_header(
     page_title="Interactive Data Explorer",
     page_emoji="🔍",
-    page_description="Explore, filter, visualize, and export carbon intelligence data for client presentations and investment decisions."
+    page_description="Explore, filter, visualize, and export carbon intelligence data for client presentations and investment decisions.",
 )
 
 st.markdown("---")
+
 
 # Load data
 @st.cache_data
@@ -90,8 +97,13 @@ st.html("""
 
 dataset_choice = st.radio(
     "Choose a dataset:",
-    ["📊 GDP & CO₂ (Merged)", "💰 GDP per Capita", "🌍 CO₂ Emissions", "🎯 Net-Zero Commitments"],
-    horizontal=True
+    [
+        "📊 GDP & CO₂ (Merged)",
+        "💰 GDP per Capita",
+        "🌍 CO₂ Emissions",
+        "🎯 Net-Zero Commitments",
+    ],
+    horizontal=True,
 )
 
 # Select the appropriate dataset
@@ -170,9 +182,7 @@ with col1:
         st.markdown("#### 🌍 Select Countries")
         all_countries = sorted(df["Country"].unique())
         selected_countries = st.multiselect(
-            "Countries (leave empty for all):",
-            options=all_countries,
-            default=[]
+            "Countries (leave empty for all):", options=all_countries, default=[]
         )
         if selected_countries:
             df = df[df["Country"].isin(selected_countries)]
@@ -187,7 +197,7 @@ with col2:
             "Year range:",
             min_value=min_year,
             max_value=max_year,
-            value=(min_year, max_year)
+            value=(min_year, max_year),
         )
         df = df[(df["Year"] >= year_range_sel[0]) & (df["Year"] <= year_range_sel[1])]
 
@@ -197,7 +207,7 @@ if "GDP_Category" in df.columns:
     gdp_categories = st.multiselect(
         "Select GDP categories:",
         options=["Low", "Medium", "High"],
-        default=["Low", "Medium", "High"]
+        default=["Low", "Medium", "High"],
     )
     df = df[df["GDP_Category"].isin(gdp_categories)]
 
@@ -217,9 +227,7 @@ st.markdown("#### 📊 Select Columns to Display")
 all_columns = list(df.columns)
 default_columns = all_columns[:10] if len(all_columns) > 10 else all_columns
 selected_columns = st.multiselect(
-    "Choose columns:",
-    options=all_columns,
-    default=default_columns
+    "Choose columns:", options=all_columns, default=default_columns
 )
 
 if selected_columns:
@@ -232,7 +240,7 @@ st.dataframe(
     sanitize_df_for_display(display_df.head(500)),
     width="stretch",
     height=450,
-    hide_index=True
+    hide_index=True,
 )
 
 # Download button with better styling
@@ -240,30 +248,31 @@ st.markdown("### 📥 Export Filtered Data")
 col1, col2 = st.columns(2)
 
 with col1:
-    csv = display_df.to_csv(index=False).encode('utf-8')
+    csv = display_df.to_csv(index=False).encode("utf-8")
     st.download_button(
         label="⬇️ Download as CSV",
         data=csv,
         file_name=f"carbonseer_{dataset_name.lower().replace(' ', '_')}_filtered.csv",
         mime="text/csv",
-        width="stretch"
+        width="stretch",
     )
 
 with col2:
     # Add Excel export option
     try:
         from io import BytesIO
+
         excel_buffer = BytesIO()
-        with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
-            display_df.to_excel(writer, index=False, sheet_name='CarbonSeer Data')
+        with pd.ExcelWriter(excel_buffer, engine="openpyxl") as writer:
+            display_df.to_excel(writer, index=False, sheet_name="CarbonSeer Data")
         excel_data = excel_buffer.getvalue()
-        
+
         st.download_button(
             label="⬇️ Download as Excel",
             data=excel_data,
             file_name=f"carbonseer_{dataset_name.lower().replace(' ', '_')}_filtered.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            width="stretch"
+            width="stretch",
         )
     except ImportError:
         st.info("📋 Install openpyxl for Excel export: `uv add openpyxl`")
@@ -284,23 +293,30 @@ col1, col2, col3 = st.columns(3)
 with col1:
     chart_type = st.selectbox(
         "Chart Type:",
-        ["Scatter Plot", "Line Chart", "Bar Chart", "Box Plot", "Histogram"]
+        ["Scatter Plot", "Line Chart", "Bar Chart", "Box Plot", "Histogram"],
     )
 
-numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns.tolist()
-categorical_cols = df.select_dtypes(include=['object', 'category']).columns.tolist()
+numeric_cols = df.select_dtypes(include=["int64", "float64"]).columns.tolist()
+categorical_cols = df.select_dtypes(include=["object", "category"]).columns.tolist()
 
 with col2:
     if chart_type in ["Scatter Plot", "Line Chart", "Bar Chart"]:
         x_col = st.selectbox("X-axis:", options=df.columns.tolist())
     elif chart_type == "Box Plot":
-        x_col = st.selectbox("Category (X-axis):", options=categorical_cols if categorical_cols else df.columns.tolist())
+        x_col = st.selectbox(
+            "Category (X-axis):",
+            options=categorical_cols if categorical_cols else df.columns.tolist(),
+        )
     else:
-        x_col = st.selectbox("Column:", options=numeric_cols if numeric_cols else df.columns.tolist())
+        x_col = st.selectbox(
+            "Column:", options=numeric_cols if numeric_cols else df.columns.tolist()
+        )
 
 with col3:
     if chart_type in ["Scatter Plot", "Line Chart", "Bar Chart", "Box Plot"]:
-        y_col = st.selectbox("Y-axis:", options=numeric_cols if numeric_cols else df.columns.tolist())
+        y_col = st.selectbox(
+            "Y-axis:", options=numeric_cols if numeric_cols else df.columns.tolist()
+        )
     else:
         y_col = None
 
@@ -316,75 +332,75 @@ if st.button("📊 Generate Visualization", width="content"):
     try:
         with st.spinner("Creating visualization..."):
             theme = get_plotly_theme()
-            
+
             if chart_type == "Scatter Plot":
                 fig = px.scatter(
-                    df, 
-                    x=x_col, 
-                    y=y_col, 
+                    df,
+                    x=x_col,
+                    y=y_col,
                     color=color_col,
                     hover_data=["Country"] if "Country" in df.columns else None,
                     title=f"{y_col} vs {x_col}",
-                    height=550
+                    height=550,
                 )
                 fig.update_layout(theme["layout"])
-                
+
             elif chart_type == "Line Chart":
                 fig = px.line(
-                    df, 
-                    x=x_col, 
-                    y=y_col, 
+                    df,
+                    x=x_col,
+                    y=y_col,
                     color=color_col,
                     title=f"{y_col} over {x_col}",
-                    height=550
+                    height=550,
                 )
                 fig.update_layout(theme["layout"])
-                
+
             elif chart_type == "Bar Chart":
                 # Aggregate data for cleaner bar charts
                 if y_col:
                     agg_df = df.groupby(x_col)[y_col].mean().reset_index()
                     fig = px.bar(
-                        agg_df, 
-                        x=x_col, 
-                        y=y_col, 
+                        agg_df,
+                        x=x_col,
+                        y=y_col,
                         title=f"Average {y_col} by {x_col}",
-                        height=550
+                        height=550,
                     )
                 else:
                     fig = px.bar(
-                        df[x_col].value_counts().reset_index(), 
-                        x=x_col, 
-                        y='count',
+                        df[x_col].value_counts().reset_index(),
+                        x=x_col,
+                        y="count",
                         title=f"Count by {x_col}",
-                        height=550
+                        height=550,
                     )
                 fig.update_layout(theme["layout"])
-                
+
             elif chart_type == "Box Plot":
                 fig = px.box(
-                    df, 
-                    x=x_col, 
-                    y=y_col, 
+                    df,
+                    x=x_col,
+                    y=y_col,
                     color=color_col,
                     title=f"{y_col} distribution by {x_col}",
-                    height=550
+                    height=550,
                 )
                 fig.update_layout(theme["layout"])
-                
+
             else:  # Histogram
                 fig = px.histogram(
-                    df, 
-                    x=x_col, 
+                    df,
+                    x=x_col,
                     color=color_col,
                     title=f"Distribution of {x_col}",
                     nbins=30,
-                    height=550
+                    height=550,
                 )
                 fig.update_layout(theme["layout"])
-            
+
             st.plotly_chart(fig, width="stretch", key="custom_viz")
-            
+
             st.html("""
             <div class='success-box'>
                 <strong>✅ Visualization Generated Successfully</strong><br>
@@ -394,12 +410,16 @@ if st.button("📊 Generate Visualization", width="content"):
                 </p>
             </div>
             """)
-            
+
     except Exception as e:
         st.error(f"❌ Error generating chart: {str(e)}")
-        st.info("💡 Try selecting different columns or adjusting your filters. Ensure the selected columns have compatible data types.")
+        st.info(
+            "💡 Try selecting different columns or adjusting your filters. Ensure the selected columns have compatible data types."
+        )
 else:
-    st.info("👆 Configure your chart settings above and click **Generate Visualization** to create your custom chart.")
+    st.info(
+        "👆 Configure your chart settings above and click **Generate Visualization** to create your custom chart."
+    )
 
 st.markdown("---")
 
@@ -414,7 +434,7 @@ if numeric_cols:
     st.markdown("#### 📊 Descriptive Statistics for Numeric Columns")
     stats_df = df[numeric_cols].describe()
     st.dataframe(sanitize_df_for_display(stats_df), width="stretch")
-    
+
     # Add correlation matrix for numeric columns
     if len(numeric_cols) > 1:
         st.markdown("#### 🔗 Correlation Matrix")
@@ -425,7 +445,7 @@ if numeric_cols:
                 text_auto=True,
                 aspect="auto",
                 color_continuous_scale="RdBu_r",
-                title="Correlation Matrix of Numeric Variables"
+                title="Correlation Matrix of Numeric Variables",
             )
             fig.update_layout(get_plotly_theme()["layout"])
             st.plotly_chart(fig, width="stretch", key="corr_matrix")
@@ -448,14 +468,12 @@ with col1:
         top_countries = df["Country"].value_counts().head(5)
         st.markdown("#### 🌍 Top 5 Countries (by records)")
         st.bar_chart(top_countries)
-    
+
     if "GDP_Category" in df.columns:
         gdp_dist = df["GDP_Category"].value_counts()
         st.markdown("#### 💰 GDP Category Distribution")
         fig = px.pie(
-            values=gdp_dist.values,
-            names=gdp_dist.index,
-            title="GDP Category Breakdown"
+            values=gdp_dist.values, names=gdp_dist.index, title="GDP Category Breakdown"
         )
         fig.update_layout(get_plotly_theme()["layout"])
         st.plotly_chart(fig, width="stretch", key="gdp_pie")
@@ -465,18 +483,21 @@ with col2:
         year_dist = df["Year"].value_counts().sort_index()
         st.markdown("#### 📅 Records by Year")
         st.line_chart(year_dist)
-    
+
     # Show data quality metrics
     st.markdown("#### 🔍 Data Quality")
     missing_pct = (df.isnull().sum() / len(df) * 100).round(2)
-    quality_df = pd.DataFrame({
-        'Column': missing_pct.index,
-        'Missing (%)': missing_pct.values
-    })
-    quality_df = quality_df[quality_df['Missing (%)'] > 0].sort_values('Missing (%)', ascending=False)
-    
+    quality_df = pd.DataFrame(
+        {"Column": missing_pct.index, "Missing (%)": missing_pct.values}
+    )
+    quality_df = quality_df[quality_df["Missing (%)"] > 0].sort_values(
+        "Missing (%)", ascending=False
+    )
+
     if len(quality_df) > 0:
-        st.dataframe(sanitize_df_for_display(quality_df), width="stretch", hide_index=True)
+        st.dataframe(
+            sanitize_df_for_display(quality_df), width="stretch", hide_index=True
+        )
     else:
         st.success("✅ No missing data in filtered dataset!")
 

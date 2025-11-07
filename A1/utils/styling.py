@@ -1580,7 +1580,7 @@ def render_sidebar_resources():
     import streamlit as st
     from pathlib import Path
     import uuid
-    
+
     # Generate truly unique keys with UUID for each button
     pdf_key = f"pdf_btn_{uuid.uuid4()}"
     notebook_key = f"nb_btn_{uuid.uuid4()}"
@@ -1614,7 +1614,7 @@ def render_sidebar_resources():
                 file_name="CarbonSeer_Analysis_Report.pdf",
                 mime="application/pdf",
                 width="stretch",
-                key=pdf_key
+                key=pdf_key,
             )
 
     if notebook_path.exists():
@@ -1628,7 +1628,7 @@ def render_sidebar_resources():
                 file_name="CarbonSeer_Analysis.ipynb",
                 mime="application/x-ipynb+json",
                 width="stretch",
-                key=notebook_key
+                key=notebook_key,
             )
 
         # Optional: Link to nbviewer
@@ -1636,5 +1636,3 @@ def render_sidebar_resources():
             "[🔗 View on GitHub](https://github.com/Kartavya-Jharwal/Kartavya_Business_Analytics2025/blob/main/A1/assignment.ipynb)",
             unsafe_allow_html=True,
         )
-
-   

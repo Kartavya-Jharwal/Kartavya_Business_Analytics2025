@@ -36,9 +36,15 @@ if "fast_mode" not in st.session_state:
 # Sidebar toggle
 with st.sidebar:
     st.markdown("### ⚙️ Preferences")
-    st.toggle("⚡ Fast Mode", value=st.session_state.fast_mode, key="fast_toggle_home",
-             help="Use sampling and defer heavy visuals for instant feedback.",
-             on_change=lambda: setattr(st.session_state, 'fast_mode', st.session_state.fast_toggle_home))
+    st.toggle(
+        "⚡ Fast Mode",
+        value=st.session_state.fast_mode,
+        key="fast_toggle_home",
+        help="Use sampling and defer heavy visuals for instant feedback.",
+        on_change=lambda: setattr(
+            st.session_state, "fast_mode", st.session_state.fast_toggle_home
+        ),
+    )
 
 st.markdown(get_custom_css("light"), unsafe_allow_html=True)
 
@@ -72,7 +78,11 @@ data_source_label = st.sidebar.selectbox(
     index=0,
     help="Choose data source for loading datasets. 'Auto' tries local first, then GitHub.",
 )
-source_map = {"Auto (Local→GitHub)": "auto", "GitHub (raw)": "github", "Local files": "local"}
+source_map = {
+    "Auto (Local→GitHub)": "auto",
+    "GitHub (raw)": "github",
+    "Local files": "local",
+}
 data_source = source_map[data_source_label]
 st.session_state.data_source = data_source  # Persist for other pages
 
@@ -122,10 +132,7 @@ render_global_branding()
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     st.image(str(lockup_path), width="stretch")
-    st.html("""
-    <div class='hero-section' style='margin-top: 2rem;'></div>
-    <div style='position: relative; z-index: 2;'></div>
-    """)
+
 # Hero text + punchy copy + CTA
 st.html("""
     <div class='hero-subtitle' style='animation-delay: 0.2s;'>
@@ -162,7 +169,7 @@ st.html("""
 """)
 
 # Native CTA buttons for reliable navigation
-c1, c2, _ = st.columns([1,1,2])
+c1, c2, _ = st.columns([1, 1, 2])
 with c1:
     if st.button("⚡ Run Fast Analysis", width="stretch"):
         try:

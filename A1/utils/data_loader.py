@@ -49,7 +49,9 @@ def _read_csv_auto(
         return pd.read_csv(local_path, **read_csv_kwargs)
     if github_path:
         return pd.read_csv(github_path, **read_csv_kwargs)
-    raise FileNotFoundError(f"Data not found locally and no GitHub URL provided: {local_path}")
+    raise FileNotFoundError(
+        f"Data not found locally and no GitHub URL provided: {local_path}"
+    )
 
 
 @st.cache_data

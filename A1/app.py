@@ -2,6 +2,7 @@
 CarbonSeer - Carbon Risk Analytics Platform
 Entry point for the Streamlit multi-page application
 """
+
 import streamlit as st
 
 st.set_page_config(

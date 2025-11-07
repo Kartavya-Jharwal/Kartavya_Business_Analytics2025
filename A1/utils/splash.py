@@ -13,7 +13,7 @@ def show_splash_overlay(logo_path: Path | None = None):
         return
 
     st.session_state.splash_shown = True
-    
+
     # Simple text-based loading message
     st.info("⏳ Loading data...")
 

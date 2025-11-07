@@ -42,8 +42,14 @@ if "data_source" not in st.session_state:
 
 with st.sidebar:
     st.markdown("### ⚙️ Preferences")
-    st.toggle("⚡ Fast Mode", value=st.session_state.fast_mode, key="fast_toggle_analysis",
-             on_change=lambda: setattr(st.session_state, 'fast_mode', st.session_state.fast_toggle_analysis))
+    st.toggle(
+        "⚡ Fast Mode",
+        value=st.session_state.fast_mode,
+        key="fast_toggle_analysis",
+        on_change=lambda: setattr(
+            st.session_state, "fast_mode", st.session_state.fast_toggle_analysis
+        ),
+    )
 
 st.markdown(get_custom_css("light"), unsafe_allow_html=True)
 render_global_branding()
@@ -58,16 +64,19 @@ render_sidebar_resources()
 render_page_header(
     page_title="Statistical Analysis & Investment Intelligence",
     page_emoji="📊",
-    page_description="Rigorous hypothesis testing, correlation analysis, and actionable insights for CBAM compliance and supply chain carbon risk."
+    page_description="Rigorous hypothesis testing, correlation analysis, and actionable insights for CBAM compliance and supply chain carbon risk.",
 )
 
-tab_overview, tab_h1, tab_h2, tab_insights, tab_quick = st.tabs([
-    "📋 Overview", 
-    "📊 GDP & CO₂ Correlation", 
-    "🎯 GDP & Net-Zero Commitments",
-    "💡 Business Intelligence",
-    "🔎 Quick Data Peek"
-]) 
+tab_overview, tab_h1, tab_h2, tab_insights, tab_quick = st.tabs(
+    [
+        "📋 Overview",
+        "📊 GDP & CO₂ Correlation",
+        "🎯 GDP & Net-Zero Commitments",
+        "💡 Business Intelligence",
+        "🔎 Quick Data Peek",
+    ]
+)
+
 
 @st.cache_data
 def load_data_fast(source: str = "auto"):
@@ -78,6 +87,7 @@ def load_data_fast(source: str = "auto"):
     merged = create_gdp_categories(merged)
     nz = create_commitment_strength(nz)
     return gdp, co2, nz, merged
+
 
 with st.spinner("Loading data…"):
     gdp_df, co2_df, nz_df, merged_df = load_data_fast(st.session_state.data_source)
@@ -92,14 +102,14 @@ with tab_overview:
         <strong>📁 Data Source:</strong> Configured on Home page. Switch between local files and GitHub for deployment flexibility.
     </div>
     """)
-    
+
     st.markdown("### 📈 Dataset Overview")
     c1, c2, c3, c4 = st.columns(4)
     with c1:
         st.html(f"""
         <div class='metric-card'>
             <div class='metric-label'>COUNTRIES ANALYZED</div>
-            <div class='metric-value'>{merged_df['Country'].nunique():,}</div>
+            <div class='metric-value'>{merged_df["Country"].nunique():,}</div>
             <div class='metric-delta' style='color: #666;'>Global coverage</div>
         </div>
         """)
@@ -107,7 +117,7 @@ with tab_overview:
         st.html(f"""
         <div class='metric-card'>
             <div class='metric-label'>LATEST YEAR</div>
-            <div class='metric-value'>{int(merged_df['Year'].max())}</div>
+            <div class='metric-value'>{int(merged_df["Year"].max())}</div>
             <div class='metric-delta' style='color: #666;'>Current data</div>
         </div>
         """)
@@ -127,7 +137,7 @@ with tab_overview:
             <div class='metric-delta' style='color: #666;'>Policy tracker</div>
         </div>
         """)
-    
+
     st.markdown("---")
     st.markdown("### 🔬 Research Questions")
     st.html("""
@@ -150,36 +160,47 @@ with tab_overview:
     """)
 
 with tab_h1:
-    st.html("<div class='section-header'>📊 Hypothesis 1: GDP & CO₂ Emissions Correlation</div>")
-    
+    st.html(
+        "<div class='section-header'>📊 Hypothesis 1: GDP & CO₂ Emissions Correlation</div>"
+    )
+
     st.markdown("""
     **Research Question:** Do countries with higher GDP per capita emit more CO₂ per capita?
     
     **Analytical Approach:** Correlation analysis (Pearson & Spearman) with R² quantification, 
     examining the linear and monotonic relationships between economic prosperity and carbon emissions.
     """)
-    
-    year = st.slider("Select Year for Analysis", 
-                    int(merged_df["Year"].min()), 
-                    int(merged_df["Year"].max()), 
-                    int(merged_df["Year"].max()),
-                    help="Choose a year to analyze the GDP-CO₂ relationship")
-    
+
+    year = st.slider(
+        "Select Year for Analysis",
+        int(merged_df["Year"].min()),
+        int(merged_df["Year"].max()),
+        int(merged_df["Year"].max()),
+        help="Choose a year to analyze the GDP-CO₂ relationship",
+    )
+
     df = merged_df[merged_df["Year"] == year].dropna()
-    
+
     if len(df) < 10:
         st.warning("⚠️ Insufficient data for selected year. Please choose another year.")
     else:
-        gdp_col = [c for c in df.columns if "gdp" in c.lower() and "capita" in c.lower()][0]
-        co2_col = [c for c in df.columns if ("co2" in c.lower() or "emission" in c.lower()) and "code" not in c.lower()][0]
-        
+        gdp_col = [
+            c for c in df.columns if "gdp" in c.lower() and "capita" in c.lower()
+        ][0]
+        co2_col = [
+            c
+            for c in df.columns
+            if ("co2" in c.lower() or "emission" in c.lower())
+            and "code" not in c.lower()
+        ][0]
+
         sample_limit = 2000 if st.session_state.fast_mode else 5000
         res = compute_correlations(df, gdp_col, co2_col, sample_limit=sample_limit)
-        
+
         if res:
             st.markdown("### 📈 Statistical Results")
             c1, c2, c3, c4 = st.columns(4)
-            
+
             with c1:
                 st.html(f"""
                 <div class='metric-card'>
@@ -190,9 +211,13 @@ with tab_h1:
                     </div>
                 </div>
                 """)
-            
+
             with c2:
-                significance = "✅ Significant" if res["pearson_p"] < 0.05 else "❌ Not significant"
+                significance = (
+                    "✅ Significant"
+                    if res["pearson_p"] < 0.05
+                    else "❌ Not significant"
+                )
                 st.html(f"""
                 <div class='metric-card'>
                     <div class='metric-label'>PEARSON CORRELATION (r)</div>
@@ -202,9 +227,13 @@ with tab_h1:
                     </div>
                 </div>
                 """)
-            
+
             with c3:
-                significance_s = "✅ Significant" if res["spearman_p"] < 0.05 else "❌ Not significant"
+                significance_s = (
+                    "✅ Significant"
+                    if res["spearman_p"] < 0.05
+                    else "❌ Not significant"
+                )
                 st.html(f"""
                 <div class='metric-card'>
                     <div class='metric-label'>SPEARMAN CORRELATION (ρ)</div>
@@ -214,7 +243,7 @@ with tab_h1:
                     </div>
                 </div>
                 """)
-            
+
             with c4:
                 st.html(f"""
                 <div class='metric-card'>
@@ -225,11 +254,17 @@ with tab_h1:
                     </div>
                 </div>
                 """)
-            
+
             # Interpretation
             st.markdown("### 🔍 Statistical Interpretation")
             if res["pearson_p"] < 0.001:
-                strength = "very strong" if abs(res["pearson_r"]) > 0.7 else "strong" if abs(res["pearson_r"]) > 0.5 else "moderate"
+                strength = (
+                    "very strong"
+                    if abs(res["pearson_r"]) > 0.7
+                    else "strong"
+                    if abs(res["pearson_r"]) > 0.5
+                    else "moderate"
+                )
                 st.html(f"""
                 <div class='success-box'>
                     <strong>✅ Statistically Significant Relationship Found</strong><br>
@@ -252,27 +287,33 @@ with tab_h1:
                     </p>
                 </div>
                 """)
-            
+
             st.markdown("---")
             st.markdown("### 📊 Visualization")
-            
+
             if st.checkbox("Show Interactive Scatter Plot with Trendline", value=True):
                 with st.spinner("Generating visualization..."):
                     fig = px.scatter(
-                        df, 
-                        x=gdp_col, 
+                        df,
+                        x=gdp_col,
                         y=co2_col,
                         hover_data=["Country"],
                         trendline="ols",
                         title=f"GDP per Capita vs CO₂ Emissions per Capita ({year})",
                         labels={
                             gdp_col: "GDP per Capita (constant 2015 US$)",
-                        co2_col: "CO₂ Emissions per Capita (tonnes)"
-                    }
-                )
+                            co2_col: "CO₂ Emissions per Capita (tonnes)",
+                        },
+                    )
                 fig.update_layout(get_plotly_theme()["layout"])
-                fig.update_traces(marker=dict(size=8, opacity=0.6, line=dict(width=0.5, color='white')))
-                st.plotly_chart(fig, width="stretch", key=f"scatter_{year}")            # Business implications
+                fig.update_traces(
+                    marker=dict(
+                        size=8, opacity=0.6, line=dict(width=0.5, color="white")
+                    )
+                )
+                st.plotly_chart(
+                    fig, width="stretch", key=f"scatter_{year}"
+                )  # Business implications
             st.markdown("### 💼 Business Implications for Carbon Consulting")
             st.html("""
             <div class='chart-container'>
@@ -289,77 +330,89 @@ with tab_h1:
             st.info("⚠️ Not enough data for correlations analysis.")
 
 with tab_h2:
-    st.html("<div class='section-header'>🎯 Hypothesis 2: GDP & Net-Zero Commitments</div>")
-    
+    st.html(
+        "<div class='section-header'>🎯 Hypothesis 2: GDP & Net-Zero Commitments</div>"
+    )
+
     st.markdown("""
     **Research Question:** Are higher-GDP countries more likely to have legally binding net-zero carbon commitments?
     
     **Analytical Approach:** Chi-square test for independence between GDP categories and commitment strength, 
     with Cramér's V for effect size quantification.
     """)
-    
+
     latest = merged_df[merged_df["Year"] == merged_df["Year"].max()]
     x = pd.merge(
-        latest[["Country", "GDP_Category"]], 
-        nz_df[["Country", "Commitment_Strength"]], 
-        on="Country", 
-        how="inner"
+        latest[["Country", "GDP_Category"]],
+        nz_df[["Country", "Commitment_Strength"]],
+        on="Country",
+        how="inner",
     ).dropna()
-    
+
     if len(x) > 10:
         st.markdown("### 📊 Commitment Strength Distribution")
-        
+
         # Create contingency table for legal commitments (strength >= 4)
         contingency = pd.crosstab(x["GDP_Category"], x["Commitment_Strength"] >= 4)
         chi = perform_chi_square_test(contingency)
-        
+
         c1, c2, c3 = st.columns(3)
-        
+
         with c1:
             st.html(f"""
             <div class='metric-card'>
                 <div class='metric-label'>CHI-SQUARE STATISTIC (χ²)</div>
-                <div class='metric-value'>{chi['chi2_statistic']:.2f}</div>
+                <div class='metric-value'>{chi["chi2_statistic"]:.2f}</div>
                 <div class='metric-delta' style='color: #666;'>
                     Test statistic
                 </div>
             </div>
             """)
-        
+
         with c2:
-            significance = "✅ Significant (p < 0.05)" if chi['p_value'] < 0.05 else "❌ Not significant"
+            significance = (
+                "✅ Significant (p < 0.05)"
+                if chi["p_value"] < 0.05
+                else "❌ Not significant"
+            )
             st.html(f"""
             <div class='metric-card'>
                 <div class='metric-label'>P-VALUE</div>
-                <div class='metric-value'>{chi['p_value']:.4f}</div>
+                <div class='metric-value'>{chi["p_value"]:.4f}</div>
                 <div class='metric-delta' style='color: #666;'>
                     {significance}
                 </div>
             </div>
             """)
-        
+
         with c3:
-            effect_desc = "Strong" if chi['cramers_v'] > 0.3 else "Moderate" if chi['cramers_v'] > 0.1 else "Weak"
+            effect_desc = (
+                "Strong"
+                if chi["cramers_v"] > 0.3
+                else "Moderate"
+                if chi["cramers_v"] > 0.1
+                else "Weak"
+            )
             st.html(f"""
             <div class='metric-card'>
                 <div class='metric-label'>CRAMÉR'S V (EFFECT SIZE)</div>
-                <div class='metric-value'>{chi['cramers_v']:.3f}</div>
+                <div class='metric-value'>{chi["cramers_v"]:.3f}</div>
                 <div class='metric-delta' style='color: #666;'>
                     {effect_desc} association
                 </div>
             </div>
             """)
-        
+
         # Statistical interpretation
         st.markdown("### 🔍 Statistical Interpretation")
-        if chi['p_value'] < 0.05:
+        if chi["p_value"] < 0.05:
             st.html(f"""
             <div class='success-box'>
                 <strong>✅ Significant Association Detected</strong><br>
                 <p style='margin: 0.5rem 0 0 0;'>
                     The chi-square test reveals a statistically significant relationship between GDP category 
-                    and net-zero commitment strength (χ² = {chi['chi2_statistic']:.2f}, p = {chi['p_value']:.4f}). 
-                    The effect size (Cramér's V = {chi['cramers_v']:.3f}) indicates a <strong>{effect_desc.lower()}</strong> association, 
+                    and net-zero commitment strength (χ² = {chi["chi2_statistic"]:.2f}, p = {chi["p_value"]:.4f}). 
+                    The effect size (Cramér's V = {chi["cramers_v"]:.3f}) indicates a <strong>{effect_desc.lower()}</strong> association, 
                     meaning GDP level is a meaningful predictor of policy commitment strength.
                 </p>
             </div>
@@ -375,20 +428,24 @@ with tab_h2:
                 </p>
             </div>
             """)
-        
+
         st.markdown("---")
         st.markdown("### 📊 Legal Commitment Rates by GDP Category")
-        
+
         # Calculate commitment rates
-        rates = x.groupby("GDP_Category", observed=True)["Commitment_Strength"].apply(
-            lambda s: (s >= 4).mean() * 100
-        ).reset_index(name="Legal_Commitment_Rate")
-        
+        rates = (
+            x.groupby("GDP_Category", observed=True)["Commitment_Strength"]
+            .apply(lambda s: (s >= 4).mean() * 100)
+            .reset_index(name="Legal_Commitment_Rate")
+        )
+
         # Sort by GDP category order
         category_order = ["Low", "Medium", "High"]
-        rates["GDP_Category"] = pd.Categorical(rates["GDP_Category"], categories=category_order, ordered=True)
+        rates["GDP_Category"] = pd.Categorical(
+            rates["GDP_Category"], categories=category_order, ordered=True
+        )
         rates = rates.sort_values("GDP_Category")
-        
+
         fig = px.bar(
             rates,
             x="GDP_Category",
@@ -396,26 +453,28 @@ with tab_h2:
             title="Legal Net-Zero Commitment Rates (%) by GDP Category",
             labels={
                 "GDP_Category": "GDP Category",
-                "Legal_Commitment_Rate": "Legal Commitment Rate (%)"
+                "Legal_Commitment_Rate": "Legal Commitment Rate (%)",
             },
             color="Legal_Commitment_Rate",
-            color_continuous_scale="Viridis"
+            color_continuous_scale="Viridis",
         )
         fig.update_layout(get_plotly_theme()["layout"])
         fig.update_layout(showlegend=False)
         st.plotly_chart(fig, width="stretch", key="commitment_bar")
-        
+
         # Show the data table
         with st.expander("📋 View Detailed Commitment Data"):
             # Count by category and commitment
-            summary = x.groupby(["GDP_Category", "Commitment_Strength"], observed=True).size().reset_index(name="Count")
+            summary = (
+                x.groupby(["GDP_Category", "Commitment_Strength"], observed=True)
+                .size()
+                .reset_index(name="Count")
+            )
             summary["Legal"] = summary["Commitment_Strength"] >= 4
             st.dataframe(
-                sanitize_df_for_display(summary),
-                width="stretch",
-                hide_index=True
+                sanitize_df_for_display(summary), width="stretch", hide_index=True
             )
-        
+
         st.markdown("---")
         st.markdown("### 💼 Business Implications for CBAM Strategy")
         st.html("""
@@ -431,20 +490,22 @@ with tab_h2:
         </div>
         """)
     else:
-        st.info("⚠️ Not enough overlapping data between GDP and net-zero datasets for analysis.")
+        st.info(
+            "⚠️ Not enough overlapping data between GDP and net-zero datasets for analysis."
+        )
 
 with tab_insights:
     st.html("<div class='section-header'>💡 Business Intelligence Summary</div>")
-    
+
     st.markdown("""
     Actionable insights for carbon consultants, ESG analysts, and supply chain strategists navigating the 
     2026 CBAM implementation and 2027 ETS2 expansion.
     """)
-    
+
     st.markdown("---")
-    
+
     col1, col2 = st.columns(2)
-    
+
     with col1:
         st.html("""
         <div class='insight-card'>
@@ -464,7 +525,7 @@ with tab_insights:
             </div>
         </div>
         """)
-        
+
         st.html("""
         <div class='insight-card' style='margin-top: 1.5rem;'>
             <h3 style='color: #6B9B91; margin-bottom: 1rem;'>💼 Investment Screening Framework</h3>
@@ -479,7 +540,7 @@ with tab_insights:
             </ul>
         </div>
         """)
-    
+
     with col2:
         st.html("""
         <div class='insight-card'>
@@ -499,7 +560,7 @@ with tab_insights:
             </div>
         </div>
         """)
-        
+
         st.html("""
         <div class='insight-card' style='margin-top: 1.5rem;'>
             <h3 style='color: #A68B7D; margin-bottom: 1rem;'>📅 2026-2027 Regulatory Timeline</h3>
@@ -514,41 +575,49 @@ with tab_insights:
             </div>
         </div>
         """)
-    
+
     st.markdown("---")
     st.markdown("### 🌍 Country-Level CarbonSeer Intelligence")
-    
+
     # Create a sample country risk table
     latest_year = merged_df["Year"].max()
-    latest_data = merged_df[merged_df["Year"] == latest_year][["Country", "GDP_Category"]].drop_duplicates()
-    
+    latest_data = merged_df[merged_df["Year"] == latest_year][
+        ["Country", "GDP_Category"]
+    ].drop_duplicates()
+
     # Merge with commitment data
     country_intel = pd.merge(
-        latest_data,
-        nz_df[["Country", "Commitment_Strength"]],
-        on="Country",
-        how="left"
+        latest_data, nz_df[["Country", "Commitment_Strength"]], on="Country", how="left"
     )
-    country_intel["Commitment_Strength"] = country_intel["Commitment_Strength"].fillna(0)
+    country_intel["Commitment_Strength"] = country_intel["Commitment_Strength"].fillna(
+        0
+    )
     country_intel["Risk_Level"] = country_intel.apply(
-        lambda row: "🟢 Low" if row["Commitment_Strength"] >= 4 and row["GDP_Category"] == "High"
-        else "🟡 Medium" if row["Commitment_Strength"] >= 2 and row["GDP_Category"] == "High"
-        else "🔴 High" if row["GDP_Category"] == "High"
+        lambda row: "🟢 Low"
+        if row["Commitment_Strength"] >= 4 and row["GDP_Category"] == "High"
+        else "🟡 Medium"
+        if row["Commitment_Strength"] >= 2 and row["GDP_Category"] == "High"
+        else "🔴 High"
+        if row["GDP_Category"] == "High"
         else "⚪ Monitor",
-        axis=1
+        axis=1,
     )
-    
+
     # Show top high-risk countries
     high_risk = country_intel[country_intel["Risk_Level"] == "🔴 High"].head(10)
-    
+
     if len(high_risk) > 0:
         st.markdown("#### 🚨 High-Risk Countries (High GDP, Weak Commitments)")
         st.dataframe(
-            sanitize_df_for_display(high_risk[["Country", "GDP_Category", "Commitment_Strength", "Risk_Level"]]),
+            sanitize_df_for_display(
+                high_risk[
+                    ["Country", "GDP_Category", "Commitment_Strength", "Risk_Level"]
+                ]
+            ),
             width="stretch",
-            hide_index=True
+            hide_index=True,
         )
-    
+
     st.html("""
     <div class='info-box' style='margin-top: 2rem;'>
         <strong>📚 How to Use This Intelligence:</strong><br>
@@ -564,36 +633,44 @@ with tab_insights:
 
 with tab_quick:
     st.html("<div class='section-header'>🔎 Quick Data Peek</div>")
-    st.caption("Preview the merged dataset. Use the **Data Explorer** page for advanced filtering and custom visualizations.")
-    
+    st.caption(
+        "Preview the merged dataset. Use the **Data Explorer** page for advanced filtering and custom visualizations."
+    )
+
     # Show a sample with key columns
     display_cols = ["Country", "Year", "GDP_Category"]
-    
+
     # Add GDP column if exists
-    gdp_col = [c for c in merged_df.columns if "gdp" in c.lower() and "capita" in c.lower()]
+    gdp_col = [
+        c for c in merged_df.columns if "gdp" in c.lower() and "capita" in c.lower()
+    ]
     if gdp_col:
         display_cols.append(gdp_col[0])
-    
+
     # Add CO2 column if exists
-    co2_col = [c for c in merged_df.columns if ("co2" in c.lower() or "emission" in c.lower()) and "code" not in c.lower()]
+    co2_col = [
+        c
+        for c in merged_df.columns
+        if ("co2" in c.lower() or "emission" in c.lower()) and "code" not in c.lower()
+    ]
     if co2_col:
         display_cols.append(co2_col[0])
-    
+
     # Filter to available columns
     available_cols = [c for c in display_cols if c in merged_df.columns]
-    
+
     st.dataframe(
         sanitize_df_for_display(merged_df[available_cols].head(200)),
         width="stretch",
         hide_index=True,
-        height=400
+        height=400,
     )
-    
+
     st.markdown("---")
     st.markdown("### 📥 Export Options")
-    
+
     col1, col2 = st.columns(2)
-    
+
     with col1:
         csv = merged_df.to_csv(index=False)
         st.download_button(
@@ -602,53 +679,64 @@ with tab_quick:
             file_name=f"carbonseer_merged_data_{latest_year}.csv",
             mime="text/csv",
             width="stretch",
-            key="download_csv_business_intel"
+            key="download_csv_business_intel",
         )
-    
+
     with col2:
-        st.markdown("""
+        st.markdown(
+            """
         <a href='https://github.com/Kartavya-Jharwal/Kartavya_Business_Analytics2025/blob/main/A1/assignment.ipynb' target='_blank'>
             <button style='width: 100%; padding: 0.5rem; background: linear-gradient(135deg, rgba(139, 125, 155, 0.1), rgba(107, 155, 145, 0.05)); 
                            border: 2px solid rgba(139, 125, 155, 0.2); border-radius: 8px; cursor: pointer;'>
                 📓 View Analysis Notebook on GitHub
             </button>
         </a>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
 with tab_quick:
     st.html("<div class='section-header'>🔎 Quick Data Peek</div>")
-    st.caption("Preview the merged dataset. Use the **Data Explorer** page for advanced filtering and custom visualizations.")
-    
+    st.caption(
+        "Preview the merged dataset. Use the **Data Explorer** page for advanced filtering and custom visualizations."
+    )
+
     # Show a sample with key columns
     display_cols = ["Country", "Year", "GDP_Category"]
-    
+
     # Add GDP column if exists
-    gdp_col = [c for c in merged_df.columns if "gdp" in c.lower() and "capita" in c.lower()]
+    gdp_col = [
+        c for c in merged_df.columns if "gdp" in c.lower() and "capita" in c.lower()
+    ]
     if gdp_col:
         display_cols.append(gdp_col[0])
-    
+
     # Add CO2 column if exists
-    co2_col = [c for c in merged_df.columns if ("co2" in c.lower() or "emission" in c.lower()) and "code" not in c.lower()]
+    co2_col = [
+        c
+        for c in merged_df.columns
+        if ("co2" in c.lower() or "emission" in c.lower()) and "code" not in c.lower()
+    ]
     if co2_col:
         display_cols.append(co2_col[0])
-    
+
     # Filter to available columns
     available_cols = [c for c in display_cols if c in merged_df.columns]
-    
+
     st.dataframe(
         sanitize_df_for_display(merged_df[available_cols].head(200)),
         width="stretch",
         hide_index=True,
-        height=400
+        height=400,
     )
-    
+
     st.markdown("---")
     st.markdown("### 📥 Export Options")
-    
+
     col1, col2 = st.columns(2)
-    
+
     latest_year = merged_df["Year"].max()
-    
+
     with col1:
         csv = merged_df.to_csv(index=False)
         st.download_button(
@@ -657,18 +745,21 @@ with tab_quick:
             file_name=f"carbonseer_merged_data_{latest_year}.csv",
             mime="text/csv",
             width="stretch",
-            key="download_csv_quick_peek"
+            key="download_csv_quick_peek",
         )
-    
+
     with col2:
-        st.markdown("""
+        st.markdown(
+            """
         <a href='https://github.com/Kartavya-Jharwal/Kartavya_Business_Analytics2025/blob/main/A1/assignment.ipynb' target='_blank'>
             <button style='width: 100%; padding: 0.5rem; background: linear-gradient(135deg, rgba(139, 125, 155, 0.1), rgba(107, 155, 145, 0.05)); 
                            border: 2px solid rgba(139, 125, 155, 0.2); border-radius: 8px; cursor: pointer;'>
                 📓 View Analysis Notebook on GitHub
             </button>
         </a>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
 st.markdown("---")
 st.html("""
