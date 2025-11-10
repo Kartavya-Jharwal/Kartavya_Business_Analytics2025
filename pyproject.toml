@@ -29,6 +29,9 @@ dependencies = [
     "tinytex>=0.2.0",
 ]
 
+[project.scripts]
+nbprint = "nbprint:main"
+
 [project.optional-dependencies]
 dev = [
     "ipykernel>=6.29.0",
