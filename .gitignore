@@ -1,2 +1,4 @@
-# Ignore all CSV files in A2/London
-A2/London/*.csv
+# Ignore all files under A2/London (Airbnb dataset)
+A2/London/
+# Keep .gitkeep if needed for directory structure
+!A2/London/.gitkeep
