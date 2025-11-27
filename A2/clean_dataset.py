@@ -6,16 +6,16 @@ This script preprocesses the raw Inside Airbnb dataset:
 2. Retains only columns needed for regression analysis
 3. Drops rows with missing price values
 
-Columns Retained (13 total):
-- price: Target variable (nightly listing price)
-- accommodates, bedrooms, beds: Core property characteristics
-- room_type: Categorical predictor (entire home, private room, etc.)
-- latitude, longitude: Geographic location for spatial analysis
-- availability_365: Annual availability metric
-- minimum_nights, maximum_nights: Booking constraints
-- number_of_reviews: Popularity/reputation proxy
-- property_type: Property classification
-- bathrooms_text: Bathroom count (text format in raw data)
+Columns Retained (13 total, all numeric columns pre-converted):
+- price: Target variable (nightly listing price) - FLOAT
+- accommodates, bedrooms, beds: Core property characteristics - FLOAT
+- bathrooms: Extracted from bathrooms_text - FLOAT
+- room_type: Categorical predictor (entire home, private room, etc.) - STRING
+- latitude, longitude: Geographic location for spatial analysis - FLOAT
+- availability_365: Annual availability metric - FLOAT
+- minimum_nights, maximum_nights: Booking constraints - FLOAT
+- number_of_reviews: Popularity/reputation proxy - FLOAT
+- property_type: Property classification - STRING
 
 Columns Dropped (66 total):
 - Identifiers: id, host_id, scrape_id
@@ -81,6 +81,25 @@ for col in columns_to_keep:
 
 # Create cleaned dataframe
 df_clean = df[columns_to_keep].copy()
+
+# Convert all numeric columns to proper numeric types
+print("\n[3.5/4] Converting numeric columns...")
+numeric_columns = [
+    'price', 'accommodates', 'bedrooms', 'beds', 
+    'latitude', 'longitude', 'availability_365',
+    'minimum_nights', 'maximum_nights', 'number_of_reviews'
+]
+
+for col in numeric_columns:
+    if col in df_clean.columns:
+        df_clean[col] = pd.to_numeric(df_clean[col], errors='coerce')
+        print(f"        - {col:20s} → float64")
+
+# Extract numeric value from bathrooms_text (e.g., "1 bath" -> 1.0)
+if 'bathrooms_text' in df_clean.columns:
+    df_clean['bathrooms'] = df_clean['bathrooms_text'].str.extract(r'([\d.]+)').astype(float)
+    df_clean = df_clean.drop(columns=['bathrooms_text'])
+    print(f"        - bathrooms_text     → bathrooms (float64)")
 
 # Drop rows with missing price (can't use for regression)
 rows_before = len(df_clean)
