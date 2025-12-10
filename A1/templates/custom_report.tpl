@@ -304,7 +304,7 @@
     <h1>Business Analytics Assignment A1</h1>
     <p>GDP per Capita, CO₂ Emissions, and Net-Zero Targets Analysis</p>
     <p style="font-size: 0.9em; margin-top: 15px;">
-        <strong>Student:</strong> Kartavya Jain | 
+        <strong>Student:</strong> Kartavya Jharwal | 
         <strong>Course:</strong> BAN-0200 | 
         <strong>Institution:</strong> Hult International Business School
     </p>
