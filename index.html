@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Calculator | London Airbnb Predictor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* =====================================================
+           CSS VARIABLES & RESET (Unified with Landing Page)
+           ===================================================== */
+        :root {
+            --bg-dark: #001d1c; /* user requested dark teal */
+            --bg-card: #01332b; /* darker card surface derived from dark teal */
+            --bg-hover: #003731; /* hover for cards */
+            --bg-elevated: #002b27;
+            --text-primary: #ffffff;
+            --text-secondary: #e4e4e4;
+            --text-muted: #c2dcc8;
+            --accent: #FF385C; /* updated pink */
+            --accent-glow: rgba(255, 56, 92, 0.25);
+            --accent-soft: rgba(255, 56, 92, 0.12);
+            --accent-hover: #FF5A74;
+            --success: #00A699;
+            --success-glow: rgba(0, 166, 153, 0.3);
+            --warning: #F5A623;
+            --border: #013f3a;
+            --border-light: #333333;
+            --mono: 'Space Mono', monospace;
+            --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --transition-fast: 0.15s ease;
+            --transition-medium: 0.3s ease;
+            --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--sans);
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* =====================================================
+           ANIMATED BACKGROUND
+           ===================================================== */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.03;
+            background-image: 
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            background: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, var(--accent-soft) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 40% at 100% 100%, rgba(0, 166, 153, 0.08) 0%, transparent 50%);
+        }
+
+        /* Floating orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 0;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--accent);
+            top: -100px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: var(--success);
+            bottom: -50px;
+            left: -50px;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.05); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+
+        /* =====================================================
+           NAVIGATION
+           ===================================================== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-logo {
+            font-family: var(--mono);
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .nav-logo:hover {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: color var(--transition-fast);
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--accent);
+            transition: width var(--transition-medium);
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--text-primary);
+        }
+
+        /* =====================================================
+           MAIN LAYOUT
+           ===================================================== */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 1.5rem 3rem;
+        }
+
+        .calculator-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            /* Desktop: left flexible content, right result column fixed for better scaling */
+            grid-template-columns: 1fr minmax(340px, 420px);
+            gap: 1.25rem;
+            background: transparent;
+            border: none;
+            animation: fadeInUp 0.8s var(--transition-slow) forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* =====================================================
+           LEFT PANEL - INPUTS
+           ===================================================== */
+        .input-panel {
+            background: var(--bg-card);
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            min-height: 420px;
+        }
+
+        .panel-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-label {
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-label::before {
+            content: '';
+            width: 8px;
+            height: 1px;
+            background: var(--accent);
+        }
+
+        .panel-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .panel-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* Input Groups */
+        .input-groups {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            flex: 1;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-label {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .input-hint {
+            font-family: var(--sans);
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: none;
+            letter-spacing: 0;
+            opacity: 0;
+            transition: opacity var(--transition-fast);
+        }
+
+        .input-group:hover .input-hint,
+        .input-group:focus-within .input-hint {
+            opacity: 1;
+        }
+
+        /* Number Input with Stepper */
+        .number-input {
+            display: flex;
+            align-items: stretch;
+            border: 1px solid var(--border);
+            background: var(--bg-dark);
+            transition: all var(--transition-fast);
+        }
+
+        .number-input:hover {
+            border-color: var(--border-light);
+        }
+
+        .number-input:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .number-btn {
+            width: 52px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+
+        .number-btn:hover {
+            color: var(--accent);
+            background: var(--bg-hover);
+        }
+
+        .number-btn:active {
+            transform: scale(0.95);
+        }
+
+        .number-btn[aria-label*="Decrease"] {
+            border-right: 1px solid var(--border);
+        }
+
+        .number-btn[aria-label*="Increase"] {
+            border-left: 1px solid var(--border);
+        }
+
+        .number-input input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: var(--mono);
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1rem 0.5rem;
+            outline: none;
+            appearance: textfield;
+            -moz-appearance: textfield;
+        }
+
+        .number-input input::-webkit-outer-spin-button,
+        .number-input input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Select Input */
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper select {
+            width: 100%;
+            padding: 1rem 3rem 1rem 1rem;
+            font-family: var(--sans);
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            transition: all var(--transition-fast);
+        }
+
+        .select-wrapper select:hover {
+            border-color: var(--border-light);
+        }
+
+        .select-wrapper select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .select-wrapper select option {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .select-wrapper::after {
+            content: '';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid var(--text-muted);
+            pointer-events: none;
+            transition: transform var(--transition-fast);
+        }
+
+        .select-wrapper:focus-within::after {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        /* Validation Warning */
+        .validation-warning {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: rgba(245, 166, 35, 0.1);
+            border: 1px solid rgba(245, 166, 35, 0.3);
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            color: var(--warning);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all var(--transition-medium);
+            pointer-events: none;
+        }
+
+        .validation-warning.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .validation-warning svg {
+            flex-shrink: 0;
+        }
+
+        /* =====================================================
+           RIGHT PANEL - RESULTS
+           ===================================================== */
+        .result-panel {
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), var(--bg-card));
+            display: flex;
+            flex-direction: column;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            min-height: 420px;
+        }
+
+        /* Price Display */
+        .price-display {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-card) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .price-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.5;
+        }
+
+        .price-label {
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .price-value {
+            font-family: var(--mono);
+            font-size: clamp(3.5rem, 8vw, 5rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+            position: relative;
+            transition: transform var(--transition-fast);
+        }
+
+        .price-value.updating {
+            animation: pricePulse 0.4s ease;
+        }
+
+        @keyframes pricePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); color: var(--accent); }
+            100% { transform: scale(1); }
+        }
+
+        .price-currency {
+            font-size: 0.5em;
+            vertical-align: super;
+            margin-right: 0.1em;
+            color: var(--accent);
+        }
+
+        .price-unit {
+            font-family: var(--sans);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.75rem;
+        }
+
+        .price-range {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .price-range-icon {
+            color: var(--text-muted);
+        }
+
+        /* Price Breakdown */
+        .breakdown {
+            padding: 2rem 3rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .breakdown-header {
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .breakdown-header::before {
+            content: '';
+            width: 8px;
+            height: 1px;
+            background: var(--success);
+        }
+
+        .breakdown-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            padding: 0.25rem 0;
+        }
+
+        .breakdown-item .label {
+            color: var(--text-secondary);
+        }
+
+        .breakdown-item .value {
+            font-family: var(--mono);
+            font-weight: 600;
+        }
+
+        .breakdown-item .value.positive {
+            color: var(--success);
+        }
+
+        .breakdown-item .value.negative {
+            color: var(--accent);
+        }
+
+        .breakdown-item .value.neutral {
+            color: var(--text-muted);
+        }
+
+        .breakdown-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 0.5rem 0;
+        }
+
+        .breakdown-total {
+            font-weight: 600;
+        }
+
+        .breakdown-total .label {
+            color: var(--text-primary);
+        }
+
+        .breakdown-total .value {
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        /* =====================================================
+           MODEL STATS FOOTER
+           ===================================================== */
+        .model-footer {
+            padding: 1.5rem 3rem;
+            border-top: 1px solid var(--border);
+            background: var(--bg-dark);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: var(--mono);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 0.25rem;
+        }
+
+        .disclaimer {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .disclaimer a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .disclaimer a:hover {
+            color: var(--text-primary);
+        }
+
+        /* =====================================================
+           CREDITS
+           ===================================================== */
+        .credits {
+            text-align: center;
+            padding: 2rem;
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+        }
+
+        .credits a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .credits a:hover {
+            color: var(--accent);
+        }
+
+        /* =====================================================
+           TOAST NOTIFICATION
+           ===================================================== */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 1rem 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 1001;
+            opacity: 0;
+            transition: all var(--transition-medium);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.visible {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast-icon {
+            color: var(--warning);
+        }
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+        @media (max-width: 1100px) {
+            .calculator-wrapper {
+                grid-template-columns: 1fr 380px; /* slightly narrower right column */
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .number-btn { width: 44px; }
+            .number-input input { font-size: 1.1rem; padding: 0.8rem 0.5rem; }
+            .panel-title { font-size: clamp(1.05rem, 3.5vw, 1.4rem); }
+            .price-value { font-size: clamp(2.25rem, 10vw, 3rem); }
+        }
+
+        @media (max-width: 900px) {
+            .calculator-wrapper {
+                grid-template-columns: 1fr;
+                max-width: 700px;
+                grid-auto-flow: row;
+            }
+
+            .input-panel,
+            .result-panel .price-display,
+            .breakdown,
+            .model-footer {
+                padding: 2rem 1.5rem;
+            }
+
+            nav {
+                padding: 1rem 1.5rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            /* Show price first on mobile for faster feedback */
+            .result-panel { order: -1; }
+        }
+
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .panel-title {
+                font-size: 1.4rem;
+            }
+
+            .price-value {
+                font-size: 3rem;
+            }
+
+            .stats-grid {
+                gap: 0.75rem;
+            }
+
+            .stat-value {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            .orb {
+                animation: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="landing.html" class="nav-logo">← BACK TO PROJECT</a>
+        <ul class="nav-links">
+            <li><a href="landing.html">Home</a></li>
+            <li><a href="index.html" class="active">Calculator</a></li>
+            <li><a href="https://github.com/kjventura/Kartavya_Business_Analytics2025" target="_blank">GitHub</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="calculator-wrapper">
+            <!-- Left Panel: Inputs -->
+            <section class="input-panel">
+                <header class="panel-header">
+                    <div class="section-label">01 · Property Details</div>
+                    <h1 class="panel-title">Configure Your Listing</h1>
+                    <p class="panel-subtitle">Adjust the parameters to predict your nightly rate</p>
+                </header>
+
+                <div class="input-groups">
+                    <!-- Guest Capacity -->
+                    <div class="input-group">
+                        <label class="input-label">
+                            <span>👥 Guest Capacity</span>
+                            <span class="input-hint">Max guests allowed</span>
+                        </label>
+                        <div class="number-input">
+                            <button type="button" class="number-btn" data-target="accommodates" data-action="decrease" aria-label="Decrease guest capacity">−</button>
+                            <input type="number" id="accommodates" value="4" min="1" max="16" step="1" aria-label="Number of guests">
+                            <button type="button" class="number-btn" data-target="accommodates" data-action="increase" aria-label="Increase guest capacity">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Bedrooms -->
+                    <div class="input-group">
+                        <label class="input-label">
+                            <span>🚪 Bedrooms</span>
+                            <span class="input-hint">0 = Studio</span>
+                        </label>
+                        <div class="number-input">
+                            <button type="button" class="number-btn" data-target="bedrooms" data-action="decrease" aria-label="Decrease bedrooms">−</button>
+                            <input type="number" id="bedrooms" value="2" min="0" max="10" step="1" aria-label="Number of bedrooms">
+                            <button type="button" class="number-btn" data-target="bedrooms" data-action="increase" aria-label="Increase bedrooms">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Beds -->
+                    <div class="input-group">
+                        <label class="input-label">
+                            <span>🛏️ Beds</span>
+                            <span class="input-hint">Total sleeping spots</span>
+                        </label>
+                        <div class="number-input">
+                            <button type="button" class="number-btn" data-target="beds" data-action="decrease" aria-label="Decrease beds">−</button>
+                            <input type="number" id="beds" value="2" min="1" max="20" step="1" aria-label="Number of beds">
+                            <button type="button" class="number-btn" data-target="beds" data-action="increase" aria-label="Increase beds">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Room Type -->
+                    <div class="input-group">
+                        <label class="input-label">
+                            <span>🏡 Room Type</span>
+                            <span class="input-hint">Listing category</span>
+                        </label>
+                        <div class="select-wrapper">
+                            <select id="roomType" aria-label="Room type">
+                                <option value="entire">Entire home/apt</option>
+                                <option value="hotel">Hotel room</option>
+                                <option value="private">Private room</option>
+                                <option value="shared">Shared room</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Validation Warning -->
+                    <div class="validation-warning" id="validationWarning" role="alert">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        <span id="validationMessage">Configuration adjusted for realistic values</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel: Results -->
+            <section class="result-panel">
+                <!-- Price Display -->
+                <div class="price-display">
+                    <div class="price-label">Predicted Nightly Rate</div>
+                    <div class="price-value" id="priceResult">
+                        <span class="price-currency">£</span><span id="priceAmount">109</span>
+                    </div>
+                    <div class="price-unit">per night</div>
+                    <div class="price-range">
+                        <svg class="price-range-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 15l-6-6-6 6"/>
+                        </svg>
+                        <span id="priceRange">Range: £78 – £152</span>
+                    </div>
+                </div>
+
+                <!-- Breakdown -->
+                <div class="breakdown">
+                    <div class="breakdown-header">02 · Price Breakdown</div>
+                    <div class="breakdown-list">
+                        <div class="breakdown-item">
+                            <span class="label">Base price (Entire home)</span>
+                            <span class="value neutral" id="breakdownBase">£102</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="label">Guest capacity effect</span>
+                            <span class="value positive" id="breakdownAccommodates">+£48</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="label">Bedroom effect</span>
+                            <span class="value positive" id="breakdownBedrooms">+£36</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="label">Bed count effect</span>
+                            <span class="value negative" id="breakdownBeds">−£10</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="label">Room type adjustment</span>
+                            <span class="value neutral" id="breakdownRoomType">—</span>
+                        </div>
+                        <div class="breakdown-divider"></div>
+                        <div class="breakdown-item breakdown-total">
+                            <span class="label">Predicted price</span>
+                            <span class="value" id="breakdownTotal">£109</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Model Stats -->
+                <footer class="model-footer">
+                    <div class="stats-grid">
+                        <div class="stat">
+                            <div class="stat-value">R² = 0.50</div>
+                            <div class="stat-label">Model Fit</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">6,319</div>
+                            <div class="stat-label">Listings</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">Predictors</div>
+                        </div>
+                    </div>
+                        <p class="disclaimer">
+                                Model trained on Inside Airbnb London data (2024). <strong style="color:var(--accent);">For educational purposes only.</strong>
+                        </p>
+                        <div style="display:flex; justify-content:center; gap:1rem; align-items:center; margin-top:0.5rem;">
+                            <a href="https://insideairbnb.com/get-the-data.html" target="_blank" aria-label="Inside Airbnb data">Dataset: Inside Airbnb</a>
+                            <a href="https://github.com/Kartavya-Jharwal/Kartavya_Business_Analytics2025" target="_blank" aria-label="Project GitHub repo">Source code</a>
+                            <a href="Final_export.html" target="_blank" aria-label="Full model export">Model details</a>
+                        </div>
+                </footer>
+            </section>
+        </div>
+
+        <div class="credits">
+            Built by <a href="https://github.com/Kartavya-Jharwal">Kartavya Jharwal</a>
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast" role="status" aria-live="polite">
+        <svg class="toast-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        <span id="toastMessage">Values adjusted</span>
+    </div>
+
+    <script>
+        /* =============================================================
+           REGRESSION MODEL COEFFICIENTS
+           From Final.ipynb OLS output (statsmodels)
+           
+           Model: ln(Price) = β₀ + β₁(accommodates) + β₂(bedrooms) + β₃(beds) 
+                            + β₄(Hotel) + β₅(Private) + β₆(Shared) + ε
+           
+           Reference category: Entire home/apt (all room dummies = 0)
+           ============================================================= */
+        const COEFFICIENTS = {
+            const: 4.6250,
+            accommodates: 0.1122,
+            bedrooms: 0.1644,
+            beds: -0.0523,
+            room_Hotel: 0.8721,
+            room_Private: -0.7310,
+            room_Shared: -1.3692
+        };
+
+        const RMSE_LOG = 0.57;
+
+        // Toast management
+        let toastTimeout = null;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.classList.add('visible');
+            
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('visible');
+            }, 3000);
+        }
+
+        /* =============================================================
+           SMART FORM VALIDATION
+           ============================================================= */
+        function validateAndAdjust() {
+            const accommodates = parseInt(document.getElementById('accommodates').value) || 1;
+            const bedrooms = parseInt(document.getElementById('bedrooms').value) || 0;
+            let beds = parseInt(document.getElementById('beds').value) || 1;
+            const roomType = document.getElementById('roomType').value;
+            
+            let adjusted = false;
+            let adjustments = [];
+
+            // Rule 1: beds >= bedrooms (at least 1 bed per bedroom, except studios)
+            if (bedrooms > 0 && beds < bedrooms) {
+                beds = bedrooms;
+                document.getElementById('beds').value = beds;
+                adjustments.push('beds ≥ bedrooms');
+                adjusted = true;
+            }
+
+            // Rule 2: accommodates <= beds * 2 (max 2 guests per bed)
+            if (accommodates > beds * 2) {
+                const newBeds = Math.ceil(accommodates / 2);
+                if (newBeds <= 20) {
+                    document.getElementById('beds').value = newBeds;
+                    beds = newBeds;
+                    adjustments.push('beds adjusted for guest count');
+                    adjusted = true;
+                }
+            }
+
+            // Rule 3: Room type specific caps
+            if ((roomType === 'private' || roomType === 'shared') && accommodates > 6) {
+                document.getElementById('accommodates').value = 6;
+                adjustments.push('capacity limited for room type');
+                adjusted = true;
+            }
+
+            // Show warning/toast if adjusted
+            const warningEl = document.getElementById('validationWarning');
+            if (adjusted) {
+                showToast(`Adjusted: ${adjustments.join(', ')}`);
+                warningEl.classList.add('visible');
+                document.getElementById('validationMessage').textContent = adjustments.join(' · ');
+            } else {
+                warningEl.classList.remove('visible');
+            }
+
+            return adjusted;
+        }
+
+        /* =============================================================
+           PRICE PREDICTION
+           ============================================================= */
+        function predictPrice(accommodates, bedrooms, beds, roomType) {
+            let logPrice = COEFFICIENTS.const;
+            logPrice += COEFFICIENTS.accommodates * accommodates;
+            logPrice += COEFFICIENTS.bedrooms * bedrooms;
+            logPrice += COEFFICIENTS.beds * beds;
+            
+            let roomAdjustment = 0;
+            if (roomType === 'hotel') roomAdjustment = COEFFICIENTS.room_Hotel;
+            else if (roomType === 'private') roomAdjustment = COEFFICIENTS.room_Private;
+            else if (roomType === 'shared') roomAdjustment = COEFFICIENTS.room_Shared;
+            
+            logPrice += roomAdjustment;
+            
+            return {
+                price: Math.exp(logPrice),
+                low: Math.exp(logPrice - RMSE_LOG),
+                high: Math.exp(logPrice + RMSE_LOG),
+                roomAdjustment: roomAdjustment
+            };
+        }
+
+        function calculateBreakdown(accommodates, bedrooms, beds, roomType) {
+            const baseLogPrice = COEFFICIENTS.const;
+            const basePrice = Math.exp(baseLogPrice);
+            
+            const withAccommodates = Math.exp(baseLogPrice + COEFFICIENTS.accommodates * accommodates);
+            const accommodatesEffect = withAccommodates - basePrice;
+            
+            const withBedrooms = Math.exp(baseLogPrice + COEFFICIENTS.bedrooms * bedrooms);
+            const bedroomsEffect = withBedrooms - basePrice;
+            
+            const withBeds = Math.exp(baseLogPrice + COEFFICIENTS.beds * beds);
+            const bedsEffect = withBeds - basePrice;
+            
+            let roomAdjustment = 0;
+            if (roomType === 'hotel') roomAdjustment = COEFFICIENTS.room_Hotel;
+            else if (roomType === 'private') roomAdjustment = COEFFICIENTS.room_Private;
+            else if (roomType === 'shared') roomAdjustment = COEFFICIENTS.room_Shared;
+            
+            const withRoomType = Math.exp(baseLogPrice + roomAdjustment);
+            const roomTypeEffect = withRoomType - basePrice;
+            
+            return {
+                base: basePrice,
+                accommodates: accommodatesEffect,
+                bedrooms: bedroomsEffect,
+                beds: bedsEffect,
+                roomType: roomTypeEffect
+            };
+        }
+
+        /* =============================================================
+           UI UPDATE
+           ============================================================= */
+        function updatePrediction() {
+            // Validate first
+            validateAndAdjust();
+            
+            const accommodates = parseInt(document.getElementById('accommodates').value) || 1;
+            const bedrooms = parseInt(document.getElementById('bedrooms').value) || 0;
+            const beds = parseInt(document.getElementById('beds').value) || 1;
+            const roomType = document.getElementById('roomType').value;
+            
+            const result = predictPrice(accommodates, bedrooms, beds, roomType);
+            const breakdown = calculateBreakdown(accommodates, bedrooms, beds, roomType);
+            
+            // Animate price update
+            const priceEl = document.getElementById('priceResult');
+            const priceAmount = document.getElementById('priceAmount');
+            priceEl.classList.add('updating');
+            
+            // Animated number counting
+            const targetPrice = Math.round(result.price);
+            const currentPrice = parseInt(priceAmount.textContent) || 0;
+            const diff = targetPrice - currentPrice;
+            const steps = 15;
+            const stepValue = diff / steps;
+            let step = 0;
+            
+            const countInterval = setInterval(() => {
+                step++;
+                if (step >= steps) {
+                    priceAmount.textContent = targetPrice;
+                    clearInterval(countInterval);
+                } else {
+                    priceAmount.textContent = Math.round(currentPrice + stepValue * step);
+                }
+            }, 20);
+            
+            setTimeout(() => priceEl.classList.remove('updating'), 400);
+            
+            // Update range
+            document.getElementById('priceRange').textContent = 
+                `Range: £${Math.round(result.low)} – £${Math.round(result.high)}`;
+            
+            // Update breakdown
+            document.getElementById('breakdownBase').textContent = '£' + Math.round(breakdown.base);
+            
+            const accEl = document.getElementById('breakdownAccommodates');
+            accEl.textContent = formatEffect(breakdown.accommodates);
+            accEl.className = 'value ' + getEffectClass(breakdown.accommodates);
+            
+            const bedrmEl = document.getElementById('breakdownBedrooms');
+            bedrmEl.textContent = formatEffect(breakdown.bedrooms);
+            bedrmEl.className = 'value ' + getEffectClass(breakdown.bedrooms);
+            
+            const bedsEl = document.getElementById('breakdownBeds');
+            bedsEl.textContent = formatEffect(breakdown.beds);
+            bedsEl.className = 'value ' + getEffectClass(breakdown.beds);
+            
+            const roomEl = document.getElementById('breakdownRoomType');
+            if (roomType === 'entire') {
+                roomEl.textContent = '—';
+                roomEl.className = 'value neutral';
+            } else {
+                roomEl.textContent = formatEffect(breakdown.roomType);
+                roomEl.className = 'value ' + getEffectClass(breakdown.roomType);
+            }
+            
+            document.getElementById('breakdownTotal').textContent = '£' + Math.round(result.price);
+        }
+
+        function formatEffect(value) {
+            if (Math.abs(value) < 0.5) return '—';
+            const sign = value >= 0 ? '+' : '−';
+            return sign + '£' + Math.abs(Math.round(value));
+        }
+
+        function getEffectClass(value) {
+            if (Math.abs(value) < 0.5) return 'neutral';
+            return value >= 0 ? 'positive' : 'negative';
+        }
+
+        /* =============================================================
+           EVENT LISTENERS
+           ============================================================= */
+        // Input changes
+        document.querySelectorAll('input, select').forEach(el => {
+            el.addEventListener('input', updatePrediction);
+            el.addEventListener('change', updatePrediction);
+        });
+
+        // Number buttons
+        document.querySelectorAll('.number-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const targetId = this.dataset.target;
+                const action = this.dataset.action;
+                const input = document.getElementById(targetId);
+                const step = parseInt(input.step) || 1;
+                const min = parseInt(input.min) || 0;
+                const max = parseInt(input.max) || 100;
+                let value = parseInt(input.value) || 0;
+                
+                if (action === 'increase') {
+                    value = Math.min(max, value + step);
+                } else {
+                    value = Math.max(min, value - step);
+                }
+                
+                input.value = value;
+                updatePrediction();
+            });
+        });
+
+        // Room type change triggers validation
+        document.getElementById('roomType').addEventListener('change', function() {
+            updatePrediction();
+        });
+
+        // Initial calculation
+        updatePrediction();
+    </script>
+</body>
+</html>
